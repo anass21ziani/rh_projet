@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord RH{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Tableau de bord RH</h1>
+    
+    <div class="rh-menu">
+        <a href="{{ path('app_logout') }}" class="btn btn-danger">Déconnexion</a>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gestion des employés</h5>
+                    <p class="card-text">Gérer les dossiers des employés</p>
+                    <a href="#" class="btn btn-primary">Employés</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Documents</h5>
+                    <p class="card-text">Gérer les documents RH</p>
+                    <a href="#" class="btn btn-primary">Documents</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Contrats</h5>
+                    <p class="card-text">Gérer les contrats de travail</p>
+                    <a href="#" class="btn btn-primary">Contrats</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Formations</h5>
+                    <p class="card-text">Planifier et suivre les formations</p>
+                    <a href="#" class="btn btn-primary">Formations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.rh-menu {
+    margin-bottom: 30px;
+    text-align: right;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+</style>
+{% endblock %}
+
+
+
+
