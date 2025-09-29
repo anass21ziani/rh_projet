@@ -47,7 +47,6 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($this->urlGenerator->generate('rh_dashboard'));
         }
 
-        // Pour les utilisateurs normaux, rediriger vers la page d'accueil
         return new RedirectResponse($this->urlGenerator->generate('app_home'));
     }
 
