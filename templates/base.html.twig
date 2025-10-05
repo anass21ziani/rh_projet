@@ -106,13 +106,51 @@
                         </li>
                         {% if app.user %}
                             {% if 'ROLE_ADMINISTRATEUR_RH' in app.user.roles %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('administrateur_rh_dashboard') }}">Administrateur RH</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                        Administrateur RH
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{{ path('administrateur_rh_dashboard') }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_manage_responsables') }}">
+                                            <i class="fas fa-users me-2"></i>Responsables RH
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_manage_employees') }}">
+                                            <i class="fas fa-user-tie me-2"></i>Employés
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_manage_nature_contrats') }}">
+                                            <i class="fas fa-file-contract me-2"></i>Types de Contrats
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('admin_manage_dossiers') }}">
+                                            <i class="fas fa-folder me-2"></i>Dossiers
+                                        </a></li>
+                                    </ul>
                                 </li>
                             {% endif %}
                             {% if 'ROLE_RESPONSABLE_RH' in app.user.roles %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('responsable_rh_dashboard') }}">Responsable RH</a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="responsableDropdown" role="button" data-bs-toggle="dropdown">
+                                        Responsable RH
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{{ path('responsable_rh_dashboard') }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_employes') }}">
+                                            <i class="fas fa-user-tie me-2"></i>Employés
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_contrats') }}">
+                                            <i class="fas fa-file-contract me-2"></i>Contrats
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_dossiers') }}">
+                                            <i class="fas fa-folder me-2"></i>Dossiers
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_documents') }}">
+                                            <i class="fas fa-file-alt me-2"></i>Documents
+                                        </a></li>
+                                    </ul>
                                 </li>
                             {% endif %}
                         {% endif %}

@@ -2,35 +2,40 @@
 
 namespace App\Form;
 
-use App\Entity\Employe;
+use App\Entity\Placard;
+use App\Entity\Dossier;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class EmployeType extends AbstractType
+class PlacardType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
         $builder
-            ->add('email', EmailType::class, [
-                'label' => 'Adresse email',
+            ->add('dossier', EntityType::class, [
+                'label' => 'Dossier',
+                'class' => Dossier::class,
+                'choice_label' => 'title',
                 'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'exemple@uiass.rh'
+                    'class' => 'form-control'
                 ]
             ])
-            ->add('password', PasswordType::class, [
-                'label' => 'Mot de passe',
-                'required' => $options['is_new'] ?? true,
-                'mapped' => false, // Ne pas mapper directement à l'entité
+            ->add('name', TextType::class, [
+                'label' => 'Nom du placard',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => '••••••••'
+                    'placeholder' => 'Ex: Placard A1, Armoire B2'
+                ]
+            ])
+            ->add('location', TextType::class, [
+                'label' => 'Emplacement',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: Bureau RH, Archives, Serveur'
                 ]
             ])
             ->add('submit', SubmitType::class, [
@@ -44,8 +49,7 @@ class EmployeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Employe::class,
-            'is_new' => true, // Option pour déterminer si c'est un nouvel utilisateur
+            'data_class' => Placard::class,
         ]);
     }
 }

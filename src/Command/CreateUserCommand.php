@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\User;
+use App\Entity\Employee;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -45,8 +45,13 @@ class CreateUserCommand extends Command
             return Command::FAILURE;
         }
 
-        $user = new User();
+        $user = new Employee();
         $user->setEmail($email);
+        $user->setFirstName('User');
+        $user->setLastName('Created');
+        $user->setHireDate(new \DateTime());
+        $user->setPosition('Employee');
+        $user->setDepartment('General');
         $user->setRoles($roles);
         $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 

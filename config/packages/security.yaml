@@ -1,12 +1,12 @@
 security:
     password_hashers:
-        App\Entity\Employe:
+        App\Entity\Employee:
             algorithm: auto
 
     providers:
-        app_employe_provider:
+        app_employee_provider:
             entity:
-                class: App\Entity\Employe
+                class: App\Entity\Employee
                 property: email
 
     firewalls:
@@ -16,7 +16,7 @@ security:
 
         main:
             lazy: true
-            provider: app_employe_provider
+            provider: app_employee_provider
             form_login:
                 login_path: app_login
                 check_path: app_login

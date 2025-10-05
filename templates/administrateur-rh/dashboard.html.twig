@@ -29,9 +29,28 @@
                                     <strong>Statut :</strong> Phase d'authentification terminée
                                 </div>
                                 <div class="mt-4">
-                                    <a href="{{ path('admin_manage_responsables') }}" class="btn btn-primary">
-                                        <i class="fas fa-users me-2"></i>Gérer les Responsables RH
-                                    </a>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <a href="{{ path('admin_manage_responsables') }}" class="btn btn-primary w-100">
+                                                <i class="fas fa-users me-2"></i>Gérer les Responsables RH
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <a href="{{ path('admin_manage_employees') }}" class="btn btn-info w-100">
+                                                <i class="fas fa-user-tie me-2"></i>Gérer les Employés
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <a href="{{ path('admin_manage_nature_contrats') }}" class="btn btn-success w-100">
+                                                <i class="fas fa-file-contract me-2"></i>Types de Contrats
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <a href="{{ path('admin_manage_dossiers') }}" class="btn btn-warning w-100">
+                                                <i class="fas fa-folder me-2"></i>Gérer les Dossiers
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
