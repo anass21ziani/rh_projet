@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Employés{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    Gestion des Employés
+                </h1>
+                <a href="{{ path('responsable_add_employe') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Employé
+                </a>
+            </div>
+            <div class="card-body">
+                {% if employes is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun employé trouvé. 
+                        <a href="{{ path('responsable_add_employe') }}" class="alert-link">Ajouter le premier employé</a>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Email</th>
+                                    <th>Rôles</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employe in employes %}
+                                <tr>
+                                    <td>{{ employe.id }}</td>
+                                    <td>{{ employe.email }}</td>
+                                    <td>
+                                        {% for role in employe.roles %}
+                                            <span class="badge bg-success me-1">{{ role }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('responsable_edit_employe', {'id': employe.id}) }}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{{ path('responsable_delete_employe', {'id': employe.id}) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet employé ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,48 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Accueil - Système d'Authentification</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 50px; background: #f5f5f5; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .user-info { background: #e8f5e8; padding: 15px; margin: 20px 0; border-radius: 5px; }
-        .logout { margin-top: 20px; }
-        .logout a { color: #d32f2f; text-decoration: none; padding: 8px 16px; background: #ffebee; border-radius: 4px; }
-        .logout a:hover { background: #ffcdd2; }
-        .login-link { color: #007cba; text-decoration: none; padding: 8px 16px; background: #e3f2fd; border-radius: 4px; }
-        .login-link:hover { background: #bbdefb; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Système d'Authentification</h1>
-        
-        {% if user %}
-            <div class="user-info">
-                <h2>Bienvenue, {{ user.email }}</h2>
-                <p><strong>Rôles :</strong> {{ user.roles|join(', ') }}</p>
-                <p><strong>Statut :</strong> Connecté avec succès</p>
-            </div>
+{% extends 'base.html.twig' %}
 
-            <h3>Fonctionnalités disponibles :</h3>
-            <ul>
-                <li>✅ Authentification réussie</li>
-                <li>✅ Gestion des sessions</li>
-                <li>✅ Hashage des mots de passe</li>
-                <li>✅ Système de rôles</li>
-            </ul>
+{% block title %}Accueil - Système RH{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        {% if app.user %}
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">
+                        <i class="fas fa-home me-2"></i>
+                        Bienvenue, {{ app.user.email|split('@')[0]|title }} !
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Informations du compte</h4>
+                            <p><strong>Email :</strong> {{ app.user.email }}</p>
+                            <p><strong>Rôles :</strong> 
+                                {% for role in app.user.roles %}
+                                    <span class="badge bg-primary me-1">{{ role }}</span>
+                                {% endfor %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Accès rapide</h4>
+                            {% if 'ROLE_ADMINISTRATEUR_RH' in app.user.roles %}
+                                <a href="{{ path('administrateur_rh_dashboard') }}" class="btn btn-primary me-2">
+                                    <i class="fas fa-cog me-1"></i>Administrateur RH
+                                </a>
+                            {% endif %}
+                            {% if 'ROLE_RESPONSABLE_RH' in app.user.roles %}
+                                <a href="{{ path('responsable_rh_dashboard') }}" class="btn btn-success me-2">
+                                    <i class="fas fa-users me-1"></i>Responsable RH
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% else %}
-            <div class="user-info">
-                <h2>Authentification requise</h2>
-                <p>Veuillez vous <a href="{{ path('app_login') }}" class="login-link">connecter</a> pour accéder au système.</p>
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">
+                        <i class="fas fa-building me-2"></i>
+                        Système de Gestion des Ressources Humaines
+                    </h1>
+                </div>
+                <div class="card-body text-center">
+                    <h3>Bienvenue sur notre plateforme RH</h3>
+                    <p class="lead">Gérez efficacement vos ressources humaines avec notre système intégré.</p>
+                    <div class="mt-4">
+                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Se connecter
+                        </a>
+                    </div>
+                </div>
             </div>
         {% endif %}
-
-        <div class="logout">
-            {% if user %}
-                <a href="{{ path('app_logout') }}">Se déconnecter</a>
-            {% endif %}
-        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -9,5 +9,5 @@ services:
         resource: '../src/'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    App\Security\InMemoryUserProvider:
-        public: true
+    App\Command\CreateUserCommand:
+        tags: ['console.command']

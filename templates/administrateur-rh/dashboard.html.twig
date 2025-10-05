@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Administrateur RH{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="mb-0">
+                    <i class="fas fa-user-tie me-2"></i>
+                    Dashboard Administrateur RH
+                </h1>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Informations système
+                                </h5>
+                                <p class="card-text">Informations sur le système et votre rôle d'administrateur RH.</p>
+                                <div class="alert alert-info">
+                                    <strong>Rôle actuel :</strong> {{ app.user.roles|join(', ') }}
+                                </div>
+                                <div class="alert alert-success">
+                                    <strong>Statut :</strong> Phase d'authentification terminée
+                                </div>
+                                <div class="mt-4">
+                                    <a href="{{ path('admin_manage_responsables') }}" class="btn btn-primary">
+                                        <i class="fas fa-users me-2"></i>Gérer les Responsables RH
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,633 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{setspace}
+
+% Configuration de la page
+\geometry{margin=2.5cm}
+
+% Configuration des couleurs pour le code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Style pour les listings de code
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+% Page 1 : Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textbf{UNIVERSITÉ [NOM DE VOTRE UNIVERSITÉ]}}\\[0.5cm]
+    {\large Faculté des Sciences et Technologies}\\[0.5cm]
+    {\large Département Informatique}\\[2cm]
+    
+    {\Huge \textbf{Système de Gestion des Ressources Humaines}}\\[1cm]
+    {\Large \textbf{Rapport d'Amélioration - Deuxième Itération}}\\[2cm]
+    
+    \begin{minipage}{0.8\textwidth}
+        \centering
+        {\large \textbf{Membres de l'équipe :}}\\[0.5cm]
+        \begin{tabular}{ll}
+            \textbf{Nom Prénom 1} & Matricule : XXXXXXXX \\
+            \textbf{Nom Prénom 2} & Matricule : XXXXXXXX \\
+            \textbf{Nom Prénom 3} & Matricule : XXXXXXXX \\
+            \textbf{[Votre Nom]} & Matricule : XXXXXXXX \\
+        \end{tabular}
+    \end{minipage}\\[2cm]
+    
+    {\large \textbf{Encadré par :}}\\[0.5cm]
+    {\large Prof. [Nom du Professeur]}\\[2cm]
+    
+    \vfill
+    
+    {\large \textbf{Année Universitaire : 2024-2025}}\\[0.5cm]
+    {\large \textbf{Date : \today}}\\[0.5cm]
+    {\large \textbf{Établissement : [Nom de votre établissement]}}
+    
+\end{titlepage}
+
+% Page 2 : Page blanche
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+% Page 3 : Sommaire
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+\tableofcontents
+
+% Page 4 : Page blanche
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+% Page 5 : Remerciements et Dédicaces
+\newpage
+\chapter*{Remerciements}
+\addcontentsline{toc}{section}{Remerciements}
+
+Nous tenons à exprimer nos sincères remerciements à toutes les personnes qui ont contribué à la réalisation de ce projet :
+
+\begin{itemize}
+    \item À notre encadrant, \textbf{Prof. [Nom du Professeur]}, pour ses conseils précieux, son suivi constant et son expertise technique qui nous ont guidés tout au long de ce projet.
+    
+    \item À l'équipe pédagogique du département informatique pour la formation solide qui nous a permis d'acquérir les compétences nécessaires à la réalisation de ce système.
+    
+    \item À nos familles pour leur soutien inconditionnel et leur patience durant les longues heures de développement.
+    
+    \item À tous nos camarades de promotion pour les échanges enrichissants et l'entraide mutuelle.
+\end{itemize}
+
+\vspace{2cm}
+
+\section*{Dédicaces}
+\addcontentsline{toc}{section}{Dédicaces}
+
+\textit{Nous dédions ce travail :}
+
+\begin{itemize}
+    \item À nos parents, pour leur amour, leurs sacrifices et leur confiance en nos capacités.
+    
+    \item À tous ceux qui nous ont encouragés et soutenus dans notre parcours académique.
+    
+    \item À la communauté open source et aux développeurs Symfony qui partagent leurs connaissances et rendent possible l'apprentissage de ces technologies.
+\end{itemize}
+
+% Page 6 : Page blanche
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+% Page 7 : Résumé
+\newpage
+\chapter*{Résumé}
+\addcontentsline{toc}{section}{Résumé}
+
+Ce rapport présente les améliorations significatives apportées au système de gestion des ressources humaines lors de sa deuxième itération de développement. Le projet, développé avec le framework Symfony 7.3 et une base de données PostgreSQL, vise à créer une solution complète et sécurisée pour la gestion du personnel d'une organisation.
+
+\textbf{Contexte :} Suite à la livraison de la première version qui incluait un système d'authentification de base, plusieurs problèmes critiques ont été identifiés, notamment des vulnérabilités de sécurité liées à une fonction d'inscription publique et des dysfonctionnements dans la gestion des sessions utilisateur.
+
+\textbf{Objectifs :} Cette deuxième itération avait pour objectifs principaux de :
+\begin{itemize}
+    \item Sécuriser le système en supprimant les vulnérabilités identifiées
+    \item Implémenter un système de gestion hiérarchique des utilisateurs
+    \item Résoudre les problèmes de session et de navigation
+    \item Développer des interfaces complètes de gestion des employés et responsables RH
+\end{itemize}
+
+\textbf{Réalisations principales :}
+\begin{itemize}
+    \item \textbf{Sécurisation complète :} Suppression de la fonction register publique et mise en place d'un système de création de comptes contrôlé hiérarchiquement
+    \item \textbf{Gestion des rôles :} Implémentation d'un système RBAC (Role-Based Access Control) avec trois niveaux : Administrateur RH, Responsable RH, et Employé
+    \item \textbf{Fonctionnalités de gestion :} Développement d'interfaces complètes permettant aux administrateurs de gérer les responsables RH et aux responsables de gérer les employés
+    \item \textbf{Amélioration de l'expérience utilisateur :} Résolution des problèmes de session, simplification des formulaires et amélioration de l'interface
+\end{itemize}
+
+\textbf{Technologies utilisées :} Symfony 7.3, PHP 8.2+, PostgreSQL 16, Bootstrap 5, Doctrine ORM 3.5
+
+\textbf{Résultats :} Le système offre maintenant une solution robuste et sécurisée pour la gestion des ressources humaines, avec une architecture extensible permettant l'ajout de fonctionnalités futures. Les tests de sécurité et fonctionnels confirment la stabilité et la fiabilité de la solution.
+
+\textbf{Mots-clés :} Gestion RH, Symfony, Sécurité, RBAC, PostgreSQL, Interface web, Authentification
+
+% Début du contenu principal avec numérotation arabe
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% Configuration des en-têtes pour le contenu principal
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Système de Gestion RH - Rapport d'Amélioration}
+\fancyhead[R]{\thepage}
+
+\section{Introduction}
+
+Ce rapport présente les améliorations apportées au système de gestion des ressources humaines lors de la deuxième itération de développement. Suite à la livraison de la première version qui incluait le système d'authentification de base, plusieurs problèmes ont été identifiés et des fonctionnalités supplémentaires ont été implémentées pour améliorer la sécurité et l'expérience utilisateur.
+
+\section{Problèmes Identifiés dans la Première Itération}
+
+\subsection{Problème de Sécurité : Fonction Register Publique}
+
+\subsubsection{Description du Problème}
+Dans la première version, le système comportait une fonction d'inscription (register) accessible publiquement, permettant à n'importe qui de créer un compte dans le système. Cette approche présentait des risques de sécurité majeurs :
+
+\begin{itemize}
+    \item Accès non autorisé au système
+    \item Création de comptes avec des privilèges inappropriés
+    \item Absence de contrôle sur qui peut accéder aux données RH sensibles
+\end{itemize}
+
+\subsubsection{Solution Implémentée}
+La fonction register publique a été complètement supprimée et remplacée par un système de création de comptes hiérarchique et contrôlé :
+
+\begin{itemize}
+    \item \textbf{Seuls les Administrateurs RH} peuvent créer des comptes Responsables RH
+    \item \textbf{Seuls les Responsables RH} peuvent créer des comptes Employés
+    \item Aucune inscription publique n'est possible
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/securite_avant_apres.png}
+    \caption{Comparaison : Avant (register public) vs Après (création contrôlée)}
+    \label{fig:securite_avant_apres}
+\end{figure}
+
+\subsection{Problèmes de Gestion de Session}
+
+\subsubsection{Description du Problème}
+Le système présentait plusieurs dysfonctionnements liés à la gestion des sessions :
+
+\begin{itemize}
+    \item Retour automatique à la page de connexion lors de la navigation arrière
+    \item Sessions non persistantes
+    \item Perte de l'état d'authentification de manière inattendue
+    \item Problèmes de cache empêchant l'accès aux pages protégées
+\end{itemize}
+
+\subsubsection{Solution Implémentée}
+Une refonte complète de la gestion des sessions a été effectuée :
+
+\begin{enumerate}
+    \item \textbf{Configuration des en-têtes de cache} : Ajout d'en-têtes HTTP appropriés pour empêcher la mise en cache des pages sensibles
+    \item \textbf{Amélioration de la persistance des sessions} : Configuration optimisée de Symfony Security
+    \item \textbf{Gestion des redirections} : Amélioration de la logique de redirection après authentification
+    \item \textbf{Validation continue de l'authentification} : Vérifications supplémentaires dans chaque contrôleur
+\end{enumerate}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/session_problemes_resolus.png}
+    \caption{Test de navigation : Sessions maintenant stables}
+    \label{fig:session_problemes_resolus}
+\end{figure}
+
+\section{Nouvelles Fonctionnalités Implémentées}
+
+\subsection{Gestion des Responsables RH par l'Administrateur}
+
+\subsubsection{Fonctionnalité : Création de Responsables RH}
+L'Administrateur RH dispose maintenant d'une interface complète pour gérer les Responsables RH :
+
+\textbf{Caractéristiques principales :}
+\begin{itemize}
+    \item Interface dédiée accessible uniquement aux Administrateurs RH
+    \item Formulaire de création avec validation des données
+    \item Attribution automatique du rôle \texttt{ROLE\_RESPONSABLE\_RH}
+    \item Hachage sécurisé des mots de passe
+    \item Messages de confirmation et d'erreur appropriés
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/admin_create_responsable.png}
+    \caption{Interface de création d'un Responsable RH par l'Administrateur}
+    \label{fig:admin_create_responsable}
+\end{figure}
+
+\subsubsection{Fonctionnalité : Modification des Responsables RH}
+L'Administrateur peut également modifier les informations des Responsables RH existants :
+
+\textbf{Fonctionnalités disponibles :}
+\begin{itemize}
+    \item Modification de l'adresse email
+    \item Changement de mot de passe (optionnel)
+    \item Préservation du rôle existant
+    \item Validation des données avant sauvegarde
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/admin_edit_responsable.png}
+    \caption{Interface de modification d'un Responsable RH}
+    \label{fig:admin_edit_responsable}
+\end{figure}
+
+\subsubsection{Fonctionnalité : Liste et Gestion des Responsables RH}
+Un tableau de bord permet à l'Administrateur de visualiser et gérer tous les Responsables RH :
+
+\textbf{Fonctionnalités du tableau de bord :}
+\begin{itemize}
+    \item Liste complète des Responsables RH
+    \item Actions rapides : Modifier, Supprimer
+    \item Recherche et filtrage (si implémenté)
+    \item Statistiques sur le nombre de Responsables
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/admin_liste_responsables.png}
+    \caption{Tableau de bord de gestion des Responsables RH}
+    \label{fig:admin_liste_responsables}
+\end{figure}
+
+\subsection{Gestion des Employés par les Responsables RH}
+
+\subsubsection{Fonctionnalité : Création d'Employés}
+Les Responsables RH disposent d'une interface similaire pour gérer les Employés :
+
+\textbf{Caractéristiques principales :}
+\begin{itemize}
+    \item Interface accessible uniquement aux Responsables RH
+    \item Formulaire de création simplifié et intuitif
+    \item Attribution automatique du rôle \texttt{ROLE\_EMPLOYE}
+    \item Validation des données d'entrée
+    \item Sécurisation des mots de passe
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/responsable_create_employe.png}
+    \caption{Interface de création d'un Employé par le Responsable RH}
+    \label{fig:responsable_create_employe}
+\end{figure}
+
+\subsubsection{Fonctionnalité : Modification des Employés}
+Les Responsables RH peuvent modifier les informations des Employés :
+
+\textbf{Fonctionnalités disponibles :}
+\begin{itemize}
+    \item Modification des informations personnelles
+    \item Mise à jour des mots de passe
+    \item Préservation des rôles et permissions
+    \item Historique des modifications (si implémenté)
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/responsable_edit_employe.png}
+    \caption{Interface de modification d'un Employé}
+    \label{fig:responsable_edit_employe}
+\end{figure}
+
+\subsubsection{Fonctionnalité : Tableau de Bord des Employés}
+Interface de gestion complète pour les Responsables RH :
+
+\textbf{Fonctionnalités du tableau de bord :}
+\begin{itemize}
+    \item Vue d'ensemble de tous les Employés
+    \item Actions de gestion : Créer, Modifier, Supprimer
+    \item Filtres et options de tri
+    \item Statistiques et rapports de base
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/responsable_liste_employes.png}
+    \caption{Tableau de bord de gestion des Employés}
+    \label{fig:responsable_liste_employes}
+\end{figure}
+
+\section{Améliorations Techniques}
+
+\subsection{Architecture de Sécurité}
+
+\subsubsection{Contrôle d'Accès Basé sur les Rôles (RBAC)}
+Implementation d'un système RBAC strict :
+
+\begin{itemize}
+    \item \textbf{ROLE\_ADMINISTRATEUR\_RH} : Accès complet, gestion des Responsables RH
+    \item \textbf{ROLE\_RESPONSABLE\_RH} : Gestion des Employés uniquement
+    \item \textbf{ROLE\_EMPLOYE} : Accès limité aux fonctionnalités de base
+\end{itemize}
+
+\subsubsection{Validation et Sécurisation des Formulaires}
+\begin{itemize}
+    \item Validation côté serveur avec Symfony Validator
+    \item Protection CSRF sur tous les formulaires
+    \item Hachage sécurisé des mots de passe avec Symfony PasswordHasher
+    \item Nettoyage et validation des données d'entrée
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/test_securite_formulaires.png}
+    \caption{Tests de sécurité des formulaires}
+    \label{fig:test_securite_formulaires}
+\end{figure}
+
+\subsection{Amélioration de l'Interface Utilisateur}
+
+\subsubsection{Design Responsive et Moderne}
+\begin{itemize}
+    \item Utilisation de Bootstrap pour un design responsive
+    \item Interface intuitive et conviviale
+    \item Messages de feedback clairs pour l'utilisateur
+    \item Navigation cohérente entre les différentes sections
+\end{itemize}
+
+\subsubsection{Simplification des Formulaires}
+Un effort particulier a été fait pour simplifier l'expérience utilisateur :
+
+\begin{itemize}
+    \item Suppression du champ de sélection de rôle (attribution automatique)
+    \item Formulaires épurés avec seulement les champs essentiels
+    \item Validation en temps réel avec messages d'erreur explicites
+    \item Boutons d'action clairement identifiés
+\end{itemize}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/formulaire_simplifie.png}
+    \caption{Formulaire simplifié sans sélection de rôle}
+    \label{fig:formulaire_simplifie}
+\end{figure}
+
+\section{Tests et Validation}
+
+\subsection{Tests de Sécurité}
+
+\subsubsection{Tests d'Accès Non Autorisé}
+Série de tests pour vérifier que les contrôles d'accès fonctionnent correctement :
+
+\begin{enumerate}
+    \item Test d'accès direct aux URLs protégées sans authentification
+    \item Test d'accès avec des rôles insuffisants
+    \item Test de manipulation des paramètres de session
+    \item Vérification de la déconnexion automatique après inactivité
+\end{enumerate}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/tests_acces_non_autorise.png}
+    \caption{Résultats des tests d'accès non autorisé}
+    \label{fig:tests_acces_non_autorise}
+\end{figure}
+
+\subsubsection{Tests de Validation des Données}
+\begin{enumerate}
+    \item Test avec des emails invalides
+    \item Test avec des mots de passe faibles
+    \item Test d'injection SQL et XSS
+    \item Validation des limites de caractères
+\end{enumerate}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/tests_validation_donnees.png}
+    \caption{Tests de validation des données d'entrée}
+    \label{fig:tests_validation_donnees}
+\end{figure}
+
+\subsection{Tests Fonctionnels}
+
+\subsubsection{Scénarios de Test Complets}
+\begin{enumerate}
+    \item \textbf{Scénario Admin} : Connexion → Création Responsable RH → Modification → Suppression
+    \item \textbf{Scénario Responsable} : Connexion → Création Employé → Modification → Gestion
+    \item \textbf{Scénario Navigation} : Tests de navigation arrière/avant, actualisation de page
+    \item \textbf{Scénario Session} : Tests de persistance de session, déconnexion
+\end{enumerate}
+
+% Espace pour image de test
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/scenarios_test_complets.png}
+    \caption{Résultats des scénarios de test fonctionnels}
+    \label{fig:scenarios_test_complets}
+\end{figure}
+
+\section{Comparaison Avant/Après}
+
+\subsection{Tableau Comparatif des Fonctionnalités}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{4cm}|p{5cm}|p{5cm}|}
+\hline
+\textbf{Aspect} & \textbf{Première Itération} & \textbf{Deuxième Itération} \\
+\hline
+Inscription & Register public accessible & Création contrôlée par hiérarchie \\
+\hline
+Gestion des rôles & Attribution manuelle & Attribution automatique \\
+\hline
+Sessions & Problèmes de persistance & Sessions stables et sécurisées \\
+\hline
+Interface & Basique & Moderne et responsive \\
+\hline
+Sécurité & Contrôles basiques & RBAC complet avec validations \\
+\hline
+Navigation & Problèmes de cache & Navigation fluide \\
+\hline
+Gestion des utilisateurs & Limitée & Complète avec CRUD \\
+\hline
+\end{tabular}
+\caption{Comparaison des fonctionnalités entre les itérations}
+\label{tab:comparaison_fonctionnalites}
+\end{table}
+
+\subsection{Métriques d'Amélioration}
+
+% Espace pour graphiques de métriques
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/metriques_amelioration.png}
+    \caption{Métriques d'amélioration : Performance, Sécurité, UX}
+    \label{fig:metriques_amelioration}
+\end{figure}
+
+\section{Architecture Technique}
+
+\subsection{Structure du Projet}
+
+\subsubsection{Organisation des Contrôleurs}
+\begin{itemize}
+    \item \texttt{AdministrateurRhController} : Gestion des Responsables RH
+    \item \texttt{ResponsableRhController} : Gestion des Employés
+    \item \texttt{SecurityController} : Authentification et sécurité
+    \item \texttt{HomeController} : Page d'accueil et navigation
+\end{itemize}
+
+\subsubsection{Modèle de Données}
+\begin{itemize}
+    \item Entité \texttt{Employe} : Utilisateur unifié avec système de rôles
+    \item Repository \texttt{EmployeRepository} : Requêtes spécialisées par rôle
+    \item Système de rôles hiérarchique avec héritage
+\end{itemize}
+
+\subsubsection{Sécurité et Authentification}
+\begin{itemize}
+    \item Configuration Symfony Security avec firewall
+    \item Authentificateur personnalisé \texttt{LoginFormAuthenticator}
+    \item Hashage des mots de passe avec algorithmes modernes
+    \item Protection CSRF et validation des formulaires
+\end{itemize}
+
+\section{Conclusion et Perspectives}
+
+\subsection{Objectifs Atteints}
+
+Cette deuxième itération a permis d'atteindre les objectifs suivants :
+
+\begin{itemize}
+    \item \textbf{Sécurisation complète} du système avec suppression des vulnérabilités
+    \item \textbf{Amélioration significative} de l'expérience utilisateur
+    \item \textbf{Implémentation} des fonctionnalités de gestion hiérarchique
+    \item \textbf{Résolution} des problèmes de session et de navigation
+    \item \textbf{Mise en place} d'une architecture robuste et extensible
+\end{itemize}
+
+\subsection{Perspectives d'Évolution}
+
+Pour les prochaines itérations, les améliorations suivantes sont envisagées :
+
+\begin{enumerate}
+    \item \textbf{Fonctionnalités avancées} : Gestion des profils détaillés, historique des actions
+    \item \textbf{Reporting} : Génération de rapports et statistiques
+    \item \textbf{API REST} : Exposition d'API pour intégrations externes
+    \item \textbf{Notifications} : Système de notifications en temps réel
+    \item \textbf{Audit} : Traçabilité complète des actions utilisateurs
+\end{enumerate}
+
+\subsection{Recommandations}
+
+\begin{itemize}
+    \item Maintenir les tests de sécurité réguliers
+    \item Effectuer des sauvegardes régulières de la base de données
+    \item Surveiller les performances et optimiser si nécessaire
+    \item Former les utilisateurs aux nouvelles fonctionnalités
+    \item Planifier les mises à jour de sécurité Symfony
+\end{itemize}
+
+% Espace pour image finale
+\begin{figure}[H]
+    \centering
+    % \includegraphics[width=0.8\textwidth]{images/architecture_finale.png}
+    \caption{Architecture finale du système RH}
+    \label{fig:architecture_finale}
+\end{figure}
+
+\section{Annexes}
+
+\subsection{Annexe A : Configuration Technique}
+
+\subsubsection{Versions des Technologies}
+\begin{itemize}
+    \item Symfony : 7.3.*
+    \item PHP : 8.2+
+    \item PostgreSQL : 16
+    \item Bootstrap : 5.x
+    \item Doctrine ORM : 3.5
+\end{itemize}
+
+\subsection{Annexe B : Commandes de Déploiement}
+
+\begin{lstlisting}[language=bash, caption=Commandes de mise en production]
+# Installation des dépendances
+composer install --no-dev --optimize-autoloader
+
+# Migration de la base de données
+php bin/console doctrine:migrations:migrate --no-interaction
+
+# Vidage du cache
+php bin/console cache:clear --env=prod
+
+# Installation des assets
+php bin/console assets:install --env=prod
+\end{lstlisting}
+
+\subsection{Annexe C : Structure des Rôles}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Rôle} & \textbf{Permissions} & \textbf{Peut Créer} \\
+\hline
+ROLE\_ADMINISTRATEUR\_RH & Gestion complète & Responsables RH \\
+\hline
+ROLE\_RESPONSABLE\_RH & Gestion employés & Employés \\
+\hline
+ROLE\_EMPLOYE & Consultation limitée & Aucun \\
+\hline
+\end{tabular}
+\caption{Matrice des rôles et permissions}
+\label{tab:matrice_roles}
+\end{table}
+
+\end{document}
