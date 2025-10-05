@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Placards{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">
+                    <i class="fas fa-archive me-2"></i>
+                    Gestion des Placards
+                </h1>
+                <a href="{{ path('responsable_add_placard') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Placard
+                </a>
+            </div>
+            <div class="card-body">
+                {% if placards is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun placard trouvé. 
+                        <a href="{{ path('responsable_add_placard') }}" class="alert-link">Ajouter le premier placard</a>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Localisation</th>
+                                    <th>Nombre de Dossiers</th>
+                                    <th>Date de Création</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for placard in placards %}
+                                <tr>
+                                    <td>{{ placard.id }}</td>
+                                    <td>
+                                        <strong>{{ placard.name }}</strong>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ placard.location }}
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ placard.dossiers|length }}</span>
+                                    </td>
+                                    <td>{{ placard.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <a href="{{ path('responsable_edit_placard', {'id': placard.id}) }}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{{ path('responsable_delete_placard', {'id': placard.id}) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce placard ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% if placard.dossiers|length > 0 %}
+                                <tr class="table-light">
+                                    <td colspan="6">
+                                        <div class="ms-4">
+                                            <h6 class="mb-2">
+                                                <i class="fas fa-folder me-2"></i>Dossiers dans ce placard ({{ placard.dossiers|length }})
+                                            </h6>
+                                            <div class="row">
+                                                {% for dossier in placard.dossiers %}
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="card card-body py-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="fas fa-folder me-2"></i>
+                                                                <strong>{{ dossier.title }}</strong>
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    {{ dossier.employee.firstName }} {{ dossier.employee.lastName }} - 
+                                                                    {{ dossier.type|title }} - 
+                                                                    {{ dossier.createdAt|date('d/m/Y') }}
+                                                                </small>
+                                                            </div>
+                                                            <div>
+                                                                <a href="{{ path('responsable_edit_dossier', {'id': dossier.id}) }}" 
+                                                                   class="btn btn-sm btn-outline-warning me-1">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

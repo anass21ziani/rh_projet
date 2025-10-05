@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Placard;
-use App\Entity\Dossier;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,14 +14,6 @@ class PlacardType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('dossier', EntityType::class, [
-                'label' => 'Dossier',
-                'class' => Dossier::class,
-                'choice_label' => 'title',
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
             ->add('name', TextType::class, [
                 'label' => 'Nom du placard',
                 'attr' => [
@@ -36,12 +26,6 @@ class PlacardType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Ex: Bureau RH, Archives, Serveur'
-                ]
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Enregistrer',
-                'attr' => [
-                    'class' => 'btn btn-primary'
                 ]
             ]);
     }

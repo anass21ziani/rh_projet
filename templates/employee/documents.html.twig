@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Documents{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="mb-0">
+                    <i class="fas fa-file-alt me-2"></i>
+                    Mes Documents
+                </h1>
+            </div>
+            <div class="card-body">
+                {% if documents is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun document trouvé.
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Nom du Fichier</th>
+                                    <th>Type</th>
+                                    <th>Dossier</th>
+                                    <th>Date d'Upload</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for document in documents %}
+                                <tr>
+                                    <td>{{ document.reference }}</td>
+                                    <td>{{ document.filename }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ document.fileType|upper }}</span>
+                                    </td>
+                                    <td>{{ document.dossier.title }}</td>
+                                    <td>{{ document.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <a href="{{ path('employee_download_document', {'id': document.id}) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-download"></i> Télécharger
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+                <div class="mt-3">
+                    <a href="{{ path('employee_dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour au Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

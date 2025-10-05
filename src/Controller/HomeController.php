@@ -13,13 +13,17 @@ class HomeController extends AbstractController
     {
         $user = $this->getUser();
         
-        // Si l'utilisateur est authentifié, vérifier qu'il a un rôle valide
+        // Si l'utilisateur est authentifié, rediriger vers son dashboard
         if ($user) {
             $roles = $user->getRoles();
-            $validRoles = ['ROLE_ADMINISTRATEUR_RH', 'ROLE_RESPONSABLE_RH', 'ROLE_EMPLOYE'];
             
-            // Si aucun rôle valide, rediriger vers login
-            if (empty(array_intersect($roles, $validRoles))) {
+            if (in_array('ROLE_ADMINISTRATEUR_RH', $roles)) {
+                return $this->redirectToRoute('administrateur_rh_dashboard');
+            } elseif (in_array('ROLE_RESPONSABLE_RH', $roles)) {
+                return $this->redirectToRoute('responsable_rh_dashboard');
+            } elseif (in_array('ROLE_EMPLOYEE', $roles)) {
+                return $this->redirectToRoute('employee_dashboard');
+            } else {
                 return $this->redirectToRoute('app_login');
             }
         }

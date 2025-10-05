@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Employé{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    Dashboard Employé
+                </h1>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Informations personnelles
+                                </h5>
+                                <div class="alert alert-info">
+                                    <strong>Nom :</strong> {{ employee.firstName }} {{ employee.lastName }}
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>Email :</strong> {{ employee.email }}
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>Poste :</strong> {{ employee.position }}
+                                </div>
+                                <div class="alert alert-info">
+                                    <strong>Département :</strong> {{ employee.department }}
+                                </div>
+                                <div class="alert alert-success">
+                                    <strong>Statut :</strong> Connecté en tant qu'employé
+                                </div>
+                                <p>Bienvenue dans votre espace personnel. Consultez vos informations, contrats et documents.</p>
+                                <div class="mt-4">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <a href="{{ path('employee_profile') }}" class="btn btn-primary w-100">
+                                                <i class="fas fa-user me-2"></i>Mon Profil
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <a href="{{ path('employee_contrats') }}" class="btn btn-success w-100">
+                                                <i class="fas fa-file-contract me-2"></i>Mes Contrats
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <a href="{{ path('employee_dossiers') }}" class="btn btn-info w-100">
+                                                <i class="fas fa-folder me-2"></i>Mes Dossiers
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <a href="{{ path('employee_documents') }}" class="btn btn-warning w-100">
+                                                <i class="fas fa-file-alt me-2"></i>Mes Documents
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <a href="{{ path('employee_demandes') }}" class="btn btn-secondary w-100">
+                                                <i class="fas fa-envelope me-2"></i>Mes Demandes et Réclamations
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="alert alert-info">
+                                        <strong>Fonctionnalités disponibles :</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li>Consultation de votre profil personnel</li>
+                                            <li>Visualisation de vos contrats</li>
+                                            <li>Accès à vos dossiers</li>
+                                            <li>Téléchargement de vos documents</li>
+                                            <li>Envoi de demandes et réclamations</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

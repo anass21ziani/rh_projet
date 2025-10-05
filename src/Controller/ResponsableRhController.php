@@ -6,18 +6,27 @@ use App\Entity\Employee;
 use App\Entity\EmployeeContrat;
 use App\Entity\Dossier;
 use App\Entity\Document;
+use App\Entity\Demande;
+use App\Entity\Placard;
 use App\Form\EmployeeType;
 use App\Form\EmployeeContratType;
 use App\Form\DossierType;
 use App\Form\DocumentType;
+use App\Form\ReponseDemandeType;
+use App\Form\PlacardType;
 use App\Repository\EmployeeRepository;
 use App\Repository\EmployeeContratRepository;
 use App\Repository\DossierRepository;
 use App\Repository\DocumentRepository;
+use App\Repository\DemandeRepository;
+use App\Repository\PlacardRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -261,6 +270,54 @@ class ResponsableRhController extends AbstractController
         return $response;
     }
 
+    #[Route('/contrats/modifier/{id}', name: 'responsable_edit_contrat')]
+    public function editContrat(int $id, Request $request, EntityManagerInterface $entityManager, EmployeeContratRepository $contratRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $contrat = $contratRepository->find($id);
+        if (!$contrat) {
+            $this->addFlash('error', 'Contrat non trouvé !');
+            return $this->redirectToRoute('responsable_manage_contrats');
+        }
+
+        $form = $this->createForm(EmployeeContratType::class, $contrat);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Contrat modifié avec succès !');
+            return $this->redirectToRoute('responsable_manage_contrats');
+        }
+
+        return $this->render('responsable-rh/add_contrat.html.twig', [
+            'form' => $form->createView(),
+            'contrat' => $contrat
+        ]);
+    }
+
+    #[Route('/contrats/supprimer/{id}', name: 'responsable_delete_contrat')]
+    public function deleteContrat(int $id, EntityManagerInterface $entityManager, EmployeeContratRepository $contratRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $contrat = $contratRepository->find($id);
+        if (!$contrat) {
+            $this->addFlash('error', 'Contrat non trouvé !');
+            return $this->redirectToRoute('responsable_manage_contrats');
+        }
+
+        $entityManager->remove($contrat);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Contrat supprimé avec succès !');
+        return $this->redirectToRoute('responsable_manage_contrats');
+    }
+
     // Gestion des dossiers
     #[Route('/dossiers', name: 'responsable_manage_dossiers')]
     public function manageDossiers(DossierRepository $dossierRepository): Response
@@ -269,7 +326,7 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $dossiers = $dossierRepository->findRecentDossiers(50);
+        $dossiers = $dossierRepository->findRecentDossiersWithDocuments(50);
 
         $response = $this->render('responsable-rh/dossiers.html.twig', [
             'dossiers' => $dossiers
@@ -313,6 +370,54 @@ class ResponsableRhController extends AbstractController
         return $response;
     }
 
+    #[Route('/dossiers/modifier/{id}', name: 'responsable_edit_dossier')]
+    public function editDossier(int $id, Request $request, EntityManagerInterface $entityManager, DossierRepository $dossierRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $dossier = $dossierRepository->find($id);
+        if (!$dossier) {
+            $this->addFlash('error', 'Dossier non trouvé !');
+            return $this->redirectToRoute('responsable_manage_dossiers');
+        }
+
+        $form = $this->createForm(DossierType::class, $dossier);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Dossier modifié avec succès !');
+            return $this->redirectToRoute('responsable_manage_dossiers');
+        }
+
+        return $this->render('responsable-rh/add_dossier.html.twig', [
+            'form' => $form->createView(),
+            'dossier' => $dossier
+        ]);
+    }
+
+    #[Route('/dossiers/supprimer/{id}', name: 'responsable_delete_dossier')]
+    public function deleteDossier(int $id, EntityManagerInterface $entityManager, DossierRepository $dossierRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $dossier = $dossierRepository->find($id);
+        if (!$dossier) {
+            $this->addFlash('error', 'Dossier non trouvé !');
+            return $this->redirectToRoute('responsable_manage_dossiers');
+        }
+
+        $entityManager->remove($dossier);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Dossier supprimé avec succès !');
+        return $this->redirectToRoute('responsable_manage_dossiers');
+    }
+
     // Gestion des documents
     #[Route('/documents', name: 'responsable_manage_documents')]
     public function manageDocuments(DocumentRepository $documentRepository): Response
@@ -353,8 +458,9 @@ class ResponsableRhController extends AbstractController
             $file = $form->get('file')->getData();
             if ($file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = transliterator_transliterate('Any-Latin; Latin-ASCII; [^A-Za-z0-9_] remove; Lower()', $originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+                $originalExtension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $safeFilename = $this->sanitizeFilename($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$originalExtension;
 
                 try {
                     $file->move(
@@ -367,7 +473,37 @@ class ResponsableRhController extends AbstractController
                 }
 
                 $document->setFilePath($this->getParameter('documents_directory') . '/' . $newFilename);
-                $document->setFileType($file->getMimeType());
+                
+                // Déterminer le type MIME basé sur l'extension
+                $extension = strtolower($originalExtension);
+                $mimeTypes = [
+                    'pdf' => 'application/pdf',
+                    'doc' => 'application/msword',
+                    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'bmp' => 'image/bmp',
+                    'tiff' => 'image/tiff',
+                    'txt' => 'text/plain',
+                    'xls' => 'application/vnd.ms-excel',
+                    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'ppt' => 'application/vnd.ms-powerpoint',
+                    'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'zip' => 'application/zip',
+                    'rar' => 'application/x-rar-compressed',
+                    'mp4' => 'video/mp4',
+                    'avi' => 'video/x-msvideo',
+                    'mov' => 'video/quicktime',
+                    'wmv' => 'video/x-ms-wmv',
+                    'mp3' => 'audio/mpeg',
+                    'wav' => 'audio/wav',
+                    'flac' => 'audio/flac'
+                ];
+                $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+                
+                $document->setFileType($mimeType);
                 $document->setUploadedBy($this->getUser()->getEmail());
             }
 
@@ -387,5 +523,367 @@ class ResponsableRhController extends AbstractController
         $response->headers->set('Expires', '0');
         
         return $response;
+    }
+
+    #[Route('/documents/modifier/{id}', name: 'responsable_edit_document')]
+    public function editDocument(int $id, Request $request, EntityManagerInterface $entityManager, DocumentRepository $documentRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $document = $documentRepository->find($id);
+        if (!$document) {
+            $this->addFlash('error', 'Document non trouvé !');
+            return $this->redirectToRoute('responsable_manage_documents');
+        }
+
+        $form = $this->createForm(DocumentType::class, $document, [
+            'is_new' => false
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('file')->getData();
+            
+            if ($file) {
+                // Supprimer l'ancien fichier s'il existe
+                if ($document->getFilePath() && file_exists($document->getFilePath())) {
+                    unlink($document->getFilePath());
+                }
+                
+                $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $originalExtension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $safeFilename = $this->sanitizeFilename($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$originalExtension;
+                
+                try {
+                    $file->move(
+                        $this->getParameter('documents_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de l\'upload du fichier.');
+                    return $this->redirectToRoute('responsable_edit_document', ['id' => $id]);
+                }
+
+                $document->setFilePath($this->getParameter('documents_directory') . '/' . $newFilename);
+                
+                // Déterminer le type MIME basé sur l'extension
+                $extension = strtolower($originalExtension);
+                $mimeTypes = [
+                    'pdf' => 'application/pdf',
+                    'doc' => 'application/msword',
+                    'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'bmp' => 'image/bmp',
+                    'tiff' => 'image/tiff',
+                    'txt' => 'text/plain',
+                    'xls' => 'application/vnd.ms-excel',
+                    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'ppt' => 'application/vnd.ms-powerpoint',
+                    'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'zip' => 'application/zip',
+                    'rar' => 'application/x-rar-compressed',
+                    'mp4' => 'video/mp4',
+                    'avi' => 'video/x-msvideo',
+                    'mov' => 'video/quicktime',
+                    'wmv' => 'video/x-ms-wmv',
+                    'mp3' => 'audio/mpeg',
+                    'wav' => 'audio/wav',
+                    'flac' => 'audio/flac'
+                ];
+                $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+                
+                $document->setFileType($mimeType);
+                $document->setUploadedBy($this->getUser()->getEmail());
+            }
+            
+            $entityManager->flush();
+            $this->addFlash('success', 'Document modifié avec succès !');
+            return $this->redirectToRoute('responsable_manage_documents');
+        }
+
+        return $this->render('responsable-rh/add_document.html.twig', [
+            'form' => $form->createView(),
+            'document' => $document
+        ]);
+    }
+
+    #[Route('/documents/supprimer/{id}', name: 'responsable_delete_document')]
+    public function deleteDocument(int $id, EntityManagerInterface $entityManager, DocumentRepository $documentRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $document = $documentRepository->find($id);
+        if (!$document) {
+            $this->addFlash('error', 'Document non trouvé !');
+            return $this->redirectToRoute('responsable_manage_documents');
+        }
+
+        // Supprimer le fichier physique s'il existe
+        if ($document->getFilePath() && file_exists($document->getFilePath())) {
+            unlink($document->getFilePath());
+        }
+
+        $entityManager->remove($document);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Document supprimé avec succès !');
+        return $this->redirectToRoute('responsable_manage_documents');
+    }
+
+    #[Route('/documents/telecharger/{id}', name: 'responsable_download_document')]
+    public function downloadDocument(int $id, DocumentRepository $documentRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $document = $documentRepository->find($id);
+        if (!$document || !$document->getFilePath() || !file_exists($document->getFilePath())) {
+            $this->addFlash('error', 'Document non trouvé !');
+            return $this->redirectToRoute('responsable_manage_documents');
+        }
+
+        $response = new BinaryFileResponse($document->getFilePath());
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            $document->getFilename()
+        );
+        
+        // Définir manuellement le type MIME pour éviter l'erreur fileinfo
+        if ($document->getFileType()) {
+            $response->headers->set('Content-Type', $document->getFileType());
+        } else {
+            // Fallback basé sur l'extension si pas de type MIME stocké
+            $extension = strtolower(pathinfo($document->getFilename(), PATHINFO_EXTENSION));
+            $mimeTypes = [
+                'pdf' => 'application/pdf',
+                'doc' => 'application/msword',
+                'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'bmp' => 'image/bmp',
+                'tiff' => 'image/tiff',
+                'txt' => 'text/plain',
+                'xls' => 'application/vnd.ms-excel',
+                'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'ppt' => 'application/vnd.ms-powerpoint',
+                'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'zip' => 'application/zip',
+                'rar' => 'application/x-rar-compressed',
+                'mp4' => 'video/mp4',
+                'avi' => 'video/x-msvideo',
+                'mov' => 'video/quicktime',
+                'wmv' => 'video/x-ms-wmv',
+                'mp3' => 'audio/mpeg',
+                'wav' => 'audio/wav',
+                'flac' => 'audio/flac'
+            ];
+            $mimeType = $mimeTypes[$extension] ?? 'application/octet-stream';
+            $response->headers->set('Content-Type', $mimeType);
+        }
+
+        return $response;
+    }
+
+    #[Route('/demandes', name: 'responsable_manage_demandes')]
+    public function manageDemandes(DemandeRepository $demandeRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $demandesEnAttente = $demandeRepository->findEnAttente();
+        $demandesTraitees = $demandeRepository->findTraiteesParResponsable($this->getUser());
+
+        return $this->render('responsable-rh/demandes.html.twig', [
+            'demandesEnAttente' => $demandesEnAttente,
+            'demandesTraitees' => $demandesTraitees
+        ]);
+    }
+
+    #[Route('/demandes/{id}', name: 'responsable_voir_demande')]
+    public function voirDemande(int $id, DemandeRepository $demandeRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $demande = $demandeRepository->find($id);
+        if (!$demande) {
+            $this->addFlash('error', 'Demande/réclamation non trouvée !');
+            return $this->redirectToRoute('responsable_manage_demandes');
+        }
+
+        return $this->render('responsable-rh/voir_demande.html.twig', [
+            'demande' => $demande
+        ]);
+    }
+
+    #[Route('/demandes/{id}/repondre', name: 'responsable_repondre_demande')]
+    public function repondreDemande(int $id, Request $request, DemandeRepository $demandeRepository, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $demande = $demandeRepository->find($id);
+        if (!$demande) {
+            $this->addFlash('error', 'Demande/réclamation non trouvée !');
+            return $this->redirectToRoute('responsable_manage_demandes');
+        }
+
+        if ($demande->getStatut() !== 'en_attente') {
+            $this->addFlash('error', 'Cette demande/réclamation a déjà été traitée !');
+            return $this->redirectToRoute('responsable_manage_demandes');
+        }
+
+        $form = $this->createForm(ReponseDemandeType::class, $demande);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $demande->setResponsableRh($this->getUser());
+            $demande->setDateReponse(new \DateTimeImmutable());
+            
+            $entityManager->flush();
+
+            $statutLibelle = $demande->getStatut() === 'acceptee' ? 'acceptée' : 'refusée';
+            $this->addFlash('success', "Demande/réclamation {$statutLibelle} avec succès !");
+            return $this->redirectToRoute('responsable_manage_demandes');
+        }
+
+        return $this->render('responsable-rh/repondre_demande.html.twig', [
+            'demande' => $demande,
+            'form' => $form->createView()
+        ]);
+    }
+
+    // ===== GESTION DES PLACARDS =====
+
+    #[Route('/placards', name: 'responsable_manage_placards')]
+    public function managePlacards(PlacardRepository $placardRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $placards = $placardRepository->findAll();
+
+        return $this->render('responsable-rh/placards.html.twig', [
+            'placards' => $placards
+        ]);
+    }
+
+    #[Route('/placards/ajouter', name: 'responsable_add_placard')]
+    public function addPlacard(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $placard = new Placard();
+        $form = $this->createForm(PlacardType::class, $placard);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($placard);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Placard créé avec succès !');
+            return $this->redirectToRoute('responsable_manage_placards');
+        }
+
+        return $this->render('responsable-rh/add_placard.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/placards/modifier/{id}', name: 'responsable_edit_placard')]
+    public function editPlacard(int $id, Request $request, EntityManagerInterface $entityManager, PlacardRepository $placardRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $placard = $placardRepository->find($id);
+        if (!$placard) {
+            $this->addFlash('error', 'Placard non trouvé !');
+            return $this->redirectToRoute('responsable_manage_placards');
+        }
+
+        $form = $this->createForm(PlacardType::class, $placard);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Placard modifié avec succès !');
+            return $this->redirectToRoute('responsable_manage_placards');
+        }
+
+        return $this->render('responsable-rh/edit_placard.html.twig', [
+            'form' => $form->createView(),
+            'placard' => $placard
+        ]);
+    }
+
+    #[Route('/placards/supprimer/{id}', name: 'responsable_delete_placard')]
+    public function deletePlacard(int $id, EntityManagerInterface $entityManager, PlacardRepository $placardRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $placard = $placardRepository->find($id);
+        if (!$placard) {
+            $this->addFlash('error', 'Placard non trouvé !');
+            return $this->redirectToRoute('responsable_manage_placards');
+        }
+
+        // Vérifier s'il y a des dossiers dans ce placard
+        if ($placard->getDossiers()->count() > 0) {
+            $this->addFlash('error', 'Impossible de supprimer ce placard car il contient des dossiers !');
+            return $this->redirectToRoute('responsable_manage_placards');
+        }
+
+        $entityManager->remove($placard);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Placard supprimé avec succès !');
+        return $this->redirectToRoute('responsable_manage_placards');
+    }
+
+    /**
+     * Sanitize filename by removing special characters and converting to lowercase
+     */
+    private function sanitizeFilename(string $filename): string
+    {
+        // Remove special characters and keep only alphanumeric, dots, hyphens, and underscores
+        $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', $filename);
+        
+        // Convert to lowercase
+        $filename = strtolower($filename);
+        
+        // Remove multiple consecutive dots, hyphens, or underscores
+        $filename = preg_replace('/[._-]{2,}/', '_', $filename);
+        
+        // Remove leading/trailing dots, hyphens, or underscores
+        $filename = trim($filename, '._-');
+        
+        // If filename is empty after sanitization, use a default name
+        if (empty($filename)) {
+            $filename = 'document';
+        }
+        
+        return $filename;
     }
 }

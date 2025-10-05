@@ -50,13 +50,17 @@ class EmployeeRepository extends ServiceEntityRepository implements PasswordUpgr
 
     public function findByRole(string $role): array
     {
-        return $this->createQueryBuilder('e')
-            ->andWhere('JSON_CONTAINS(e.roles, :role) = 1')
-            ->setParameter('role', json_encode($role))
+        // Récupérer tous les employés et filtrer en PHP pour éviter les problèmes de compatibilité PostgreSQL
+        $allEmployees = $this->createQueryBuilder('e')
             ->orderBy('e.lastName', 'ASC')
             ->addOrderBy('e.firstName', 'ASC')
             ->getQuery()
             ->getResult();
+
+        // Filtrer les employés qui ont le rôle spécifié
+        return array_filter($allEmployees, function($employee) use ($role) {
+            return in_array($role, $employee->getRoles());
+        });
     }
 
     public function findActiveEmployees(): array

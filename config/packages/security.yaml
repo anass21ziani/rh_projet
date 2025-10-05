@@ -40,3 +40,4 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/administrateur-rh, roles: ROLE_ADMINISTRATEUR_RH }
         - { path: ^/responsable-rh, roles: ROLE_RESPONSABLE_RH }
+        - { path: ^/employee, roles: ROLE_EMPLOYEE }

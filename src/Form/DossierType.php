@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Dossier;
 use App\Entity\Employee;
+use App\Entity\Placard;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -56,10 +57,16 @@ class DossierType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Enregistrer',
+            ->add('placard', EntityType::class, [
+                'label' => 'Placard',
+                'class' => Placard::class,
+                'choice_label' => function(Placard $placard) {
+                    return $placard->getName() . ' (' . $placard->getLocation() . ')';
+                },
+                'required' => false,
+                'placeholder' => 'Sélectionner un placard (optionnel)',
                 'attr' => [
-                    'class' => 'btn btn-primary'
+                    'class' => 'form-control'
                 ]
             ]);
     }

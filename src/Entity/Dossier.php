@@ -32,15 +32,15 @@ class Dossier
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\OneToMany(targetEntity: Placard::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
-    private Collection $placards;
+    #[ORM\ManyToOne(targetEntity: Placard::class, inversedBy: 'dossiers')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Placard $placard = null;
 
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
     private Collection $documents;
 
     public function __construct()
     {
-        $this->placards = new ArrayCollection();
         $this->documents = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
@@ -105,27 +105,14 @@ class Dossier
         return $this;
     }
 
-    public function getPlacards(): Collection
+    public function getPlacard(): ?Placard
     {
-        return $this->placards;
+        return $this->placard;
     }
 
-    public function addPlacard(Placard $placard): static
+    public function setPlacard(?Placard $placard): static
     {
-        if (!$this->placards->contains($placard)) {
-            $this->placards->add($placard);
-            $placard->setDossier($this);
-        }
-        return $this;
-    }
-
-    public function removePlacard(Placard $placard): static
-    {
-        if ($this->placards->removeElement($placard)) {
-            if ($placard->getDossier() === $this) {
-                $placard->setDossier(null);
-            }
-        }
+        $this->placard = $placard;
         return $this;
     }
 

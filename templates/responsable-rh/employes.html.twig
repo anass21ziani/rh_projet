@@ -16,7 +16,7 @@
                 </a>
             </div>
             <div class="card-body">
-                {% if employes is empty %}
+                {% if employees is empty %}
                     <div class="alert alert-info text-center">
                         <i class="fas fa-info-circle me-2"></i>
                         Aucun employé trouvé. 
@@ -28,21 +28,23 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
                                     <th>Email</th>
-                                    <th>Rôles</th>
+                                    <th>Poste</th>
+                                    <th>Département</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for employe in employes %}
+                                {% for employe in employees %}
                                 <tr>
                                     <td>{{ employe.id }}</td>
+                                    <td>{{ employe.lastName }}</td>
+                                    <td>{{ employe.firstName }}</td>
                                     <td>{{ employe.email }}</td>
-                                    <td>
-                                        {% for role in employe.roles %}
-                                            <span class="badge bg-success me-1">{{ role }}</span>
-                                        {% endfor %}
-                                    </td>
+                                    <td>{{ employe.position }}</td>
+                                    <td>{{ employe.department }}</td>
                                     <td>
                                         <a href="{{ path('responsable_edit_employe', {'id': employe.id}) }}" class="btn btn-sm btn-warning me-2">
                                             <i class="fas fa-edit"></i> Modifier

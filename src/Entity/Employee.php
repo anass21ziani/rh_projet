@@ -168,7 +168,8 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        $roles[] = 'ROLE_EMPLOYEE';
+        // Ne pas ajouter ROLE_EMPLOYEE automatiquement car cela cause des conflits
+        // Les rôles sont définis explicitement dans les fixtures
         return array_unique($roles);
     }
 

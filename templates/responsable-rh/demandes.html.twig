@@ -1,0 +1,130 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Demandes et Réclamations{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>Gestion des Demandes et Réclamations
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Demandes en attente -->
+                    <div class="mb-5">
+                        <h6 class="text-warning">
+                            <i class="fas fa-clock me-2"></i>Demandes et Réclamations en Attente ({{ demandesEnAttente|length }})
+                        </h6>
+                        {% if demandesEnAttente is empty %}
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Aucune demande ou réclamation en attente. Toutes ont été traitées !
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Employé</th>
+                                            <th>Titre</th>
+                                            <th>Date d'envoi</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for demande in demandesEnAttente %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ demande.employe.email }}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{ demande.titre }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ demande.contenu|slice(0, 100) }}{% if demande.contenu|length > 100 %}...{% endif %}</small>
+                                            </td>
+                                            <td>{{ demande.dateCreation|date('d/m/Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ path('responsable_voir_demande', {'id': demande.id}) }}" 
+                                                   class="btn btn-sm btn-outline-primary me-1">
+                                                    <i class="fas fa-eye"></i> Voir
+                                                </a>
+                                                <a href="{{ path('responsable_repondre_demande', {'id': demande.id}) }}" 
+                                                   class="btn btn-sm btn-success">
+                                                    <i class="fas fa-reply"></i> Répondre
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Demandes traitées -->
+                    <div>
+                        <h6 class="text-success">
+                            <i class="fas fa-check me-2"></i>Demandes et Réclamations Traitées ({{ demandesTraitees|length }})
+                        </h6>
+                        {% if demandesTraitees is empty %}
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Aucune demande ou réclamation traitée pour le moment.
+                            </div>
+                        {% else %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Employé</th>
+                                            <th>Titre</th>
+                                            <th>Date d'envoi</th>
+                                            <th>Statut</th>
+                                            <th>Date de réponse</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for demande in demandesTraitees %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ demande.employe.email }}</small>
+                                            </td>
+                                            <td>
+                                                <strong>{{ demande.titre }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ demande.contenu|slice(0, 100) }}{% if demande.contenu|length > 100 %}...{% endif %}</small>
+                                            </td>
+                                            <td>{{ demande.dateCreation|date('d/m/Y H:i') }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ demande.statutCouleur }}">
+                                                    {{ demande.statutLibelle }}
+                                                </span>
+                                            </td>
+                                            <td>{{ demande.dateReponse|date('d/m/Y H:i') }}</td>
+                                            <td>
+                                                <a href="{{ path('responsable_voir_demande', {'id': demande.id}) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> Voir
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

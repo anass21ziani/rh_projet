@@ -117,15 +117,6 @@
                                         <li><a class="dropdown-item" href="{{ path('admin_manage_responsables') }}">
                                             <i class="fas fa-users me-2"></i>Responsables RH
                                         </a></li>
-                                        <li><a class="dropdown-item" href="{{ path('admin_manage_employees') }}">
-                                            <i class="fas fa-user-tie me-2"></i>Employés
-                                        </a></li>
-                                        <li><a class="dropdown-item" href="{{ path('admin_manage_nature_contrats') }}">
-                                            <i class="fas fa-file-contract me-2"></i>Types de Contrats
-                                        </a></li>
-                                        <li><a class="dropdown-item" href="{{ path('admin_manage_dossiers') }}">
-                                            <i class="fas fa-folder me-2"></i>Dossiers
-                                        </a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -149,6 +140,39 @@
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_documents') }}">
                                             <i class="fas fa-file-alt me-2"></i>Documents
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_demandes') }}">
+                                            <i class="fas fa-envelope me-2"></i>Demandes et Réclamations
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_placards') }}">
+                                            <i class="fas fa-archive me-2"></i>Placards
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            {% if 'ROLE_EMPLOYEE' in app.user.roles %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="employeeDropdown" role="button" data-bs-toggle="dropdown">
+                                        Employé
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="{{ path('employee_dashboard') }}">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('employee_profile') }}">
+                                            <i class="fas fa-user me-2"></i>Mon Profil
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('employee_contrats') }}">
+                                            <i class="fas fa-file-contract me-2"></i>Mes Contrats
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('employee_dossiers') }}">
+                                            <i class="fas fa-folder me-2"></i>Mes Dossiers
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('employee_documents') }}">
+                                            <i class="fas fa-file-alt me-2"></i>Mes Documents
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('employee_demandes') }}">
+                                            <i class="fas fa-envelope me-2"></i>Mes Demandes et Réclamations
                                         </a></li>
                                     </ul>
                                 </li>

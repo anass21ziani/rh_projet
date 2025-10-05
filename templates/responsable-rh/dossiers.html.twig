@@ -1,0 +1,131 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Dossiers{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">
+                    <i class="fas fa-folder me-2"></i>
+                    Gestion des Dossiers
+                </h1>
+                <a href="{{ path('responsable_add_dossier') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Dossier
+                </a>
+            </div>
+            <div class="card-body">
+                {% if dossiers is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun dossier trouvé. 
+                        <a href="{{ path('responsable_add_dossier') }}" class="alert-link">Ajouter le premier dossier</a>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Employé</th>
+                                    <th>Type</th>
+                                    <th>Placard</th>
+                                    <th>Description</th>
+                                    <th>Date de Création</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dossier in dossiers %}
+                                <tr>
+                                    <td>{{ dossier.id }}</td>
+                                    <td>{{ dossier.title }}</td>
+                                    <td>{{ dossier.employee.firstName }} {{ dossier.employee.lastName }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ dossier.type|title }}</span>
+                                    </td>
+                                    <td>
+                                        {% if dossier.placard %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-archive me-1"></i>
+                                                {{ dossier.placard.name }}
+                                            </span>
+                                            <br>
+                                            <small class="text-muted">{{ dossier.placard.location }}</small>
+                                        {% else %}
+                                            <span class="text-muted">Aucun placard</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ dossier.description|length > 50 ? dossier.description|slice(0, 50) ~ '...' : dossier.description }}</td>
+                                    <td>{{ dossier.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <a href="{{ path('responsable_edit_dossier', {'id': dossier.id}) }}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{{ path('responsable_add_document', {'dossier_id': dossier.id}) }}" class="btn btn-sm btn-info me-2">
+                                            <i class="fas fa-file-upload"></i> Ajouter Document
+                                        </a>
+                                        <a href="{{ path('responsable_delete_dossier', {'id': dossier.id}) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% if dossier.documents|length > 0 %}
+                                <tr class="table-light">
+                                    <td colspan="8">
+                                        <div class="ms-4">
+                                            <h6 class="mb-2">
+                                                <i class="fas fa-files me-2"></i>Documents ({{ dossier.documents|length }})
+                                            </h6>
+                                            <div class="row">
+                                                {% for document in dossier.documents %}
+                                                <div class="col-md-6 mb-2">
+                                                    <div class="card card-body py-2">
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <div>
+                                                                <i class="fas fa-file me-2"></i>
+                                                                <strong>{{ document.filename }}</strong>
+                                                                <br>
+                                                                <small class="text-muted">
+                                                                    {{ document.fileType }} - 
+                                                                    {{ document.createdAt|date('d/m/Y H:i') }}
+                                                                </small>
+                                                            </div>
+                                                            <div>
+                                                                <a href="{{ path('responsable_download_document', {'id': document.id}) }}" 
+                                                                   class="btn btn-sm btn-outline-primary me-1">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
+                                                                <a href="{{ path('responsable_edit_document', {'id': document.id}) }}" 
+                                                                   class="btn btn-sm btn-outline-warning me-1">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <a href="{{ path('responsable_delete_document', {'id': document.id}) }}" 
+                                                                   class="btn btn-sm btn-outline-danger"
+                                                                   onclick="return confirm('Supprimer ce document ?')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

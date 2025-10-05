@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Contrats{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="mb-0">
+                    <i class="fas fa-file-contract me-2"></i>
+                    Gestion des Contrats
+                </h1>
+                <a href="{{ path('responsable_add_contrat') }}" class="btn btn-success">
+                    <i class="fas fa-plus me-2"></i>Ajouter un Contrat
+                </a>
+            </div>
+            <div class="card-body">
+                {% if contrats is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun contrat trouvé. 
+                        <a href="{{ path('responsable_add_contrat') }}" class="alert-link">Ajouter le premier contrat</a>
+                    </div>
+                {% else %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employé</th>
+                                    <th>Type de Contrat</th>
+                                    <th>Date de Début</th>
+                                    <th>Date de Fin</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contrat in contrats %}
+                                <tr>
+                                    <td>{{ contrat.id }}</td>
+                                    <td>{{ contrat.employee.firstName }} {{ contrat.employee.lastName }}</td>
+                                    <td>{{ contrat.natureContrat.libelle }}</td>
+                                    <td>{{ contrat.startDate|date('d/m/Y') }}</td>
+                                    <td>{{ contrat.endDate ? contrat.endDate|date('d/m/Y') : 'Non définie' }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ contrat.statut == 'actif' ? 'success' : (contrat.statut == 'terminé' ? 'danger' : 'warning') }}">
+                                            {{ contrat.statut|title }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('responsable_edit_contrat', {'id': contrat.id}) }}" class="btn btn-sm btn-warning me-2">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                        <a href="{{ path('responsable_delete_contrat', {'id': contrat.id}) }}" 
+                                           class="btn btn-sm btn-danger"
+                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

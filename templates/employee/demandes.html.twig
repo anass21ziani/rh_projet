@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Demandes et Réclamations{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>Mes Demandes et Réclamations
+                    </h5>
+                    <a href="{{ path('employee_nouvelle_demande') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Nouvelle Demande/Réclamation
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if demandes is empty %}
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Vous n'avez encore envoyé aucune demande ou réclamation.
+                            <a href="{{ path('employee_nouvelle_demande') }}" class="alert-link">Envoyer votre première demande</a>
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Date d'envoi</th>
+                                        <th>Statut</th>
+                                        <th>Date de réponse</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demande in demandes %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ demande.titre }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ demande.contenu|slice(0, 100) }}{% if demande.contenu|length > 100 %}...{% endif %}</small>
+                                        </td>
+                                        <td>{{ demande.dateCreation|date('d/m/Y H:i') }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ demande.statutCouleur }}">
+                                                {{ demande.statutLibelle }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if demande.dateReponse %}
+                                                {{ demande.dateReponse|date('d/m/Y H:i') }}
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{{ path('employee_voir_demande', {'id': demande.id}) }}" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i> Voir
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

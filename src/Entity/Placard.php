@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PlacardRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlacardRepository::class)]
@@ -14,9 +16,8 @@ class Placard
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'placards')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Dossier $dossier = null;
+    #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'placard')]
+    private Collection $dossiers;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
@@ -29,6 +30,7 @@ class Placard
 
     public function __construct()
     {
+        $this->dossiers = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -37,14 +39,27 @@ class Placard
         return $this->id;
     }
 
-    public function getDossier(): ?Dossier
+    public function getDossiers(): Collection
     {
-        return $this->dossier;
+        return $this->dossiers;
     }
 
-    public function setDossier(?Dossier $dossier): static
+    public function addDossier(Dossier $dossier): static
     {
-        $this->dossier = $dossier;
+        if (!$this->dossiers->contains($dossier)) {
+            $this->dossiers->add($dossier);
+            $dossier->setPlacard($this);
+        }
+        return $this;
+    }
+
+    public function removeDossier(Dossier $dossier): static
+    {
+        if ($this->dossiers->removeElement($dossier)) {
+            if ($dossier->getPlacard() === $this) {
+                $dossier->setPlacard(null);
+            }
+        }
         return $this;
     }
 
