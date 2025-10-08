@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\NatureContrat;
 use App\Entity\EmployeeContrat;
 use App\Entity\Dossier;
@@ -14,7 +14,7 @@ use App\Form\EmployeeContratType;
 use App\Form\DossierType;
 use App\Form\PlacardType;
 use App\Form\DocumentType;
-use App\Repository\EmployeeRepository;
+use App\Repository\EmployeRepository;
 use App\Repository\NatureContratRepository;
 use App\Repository\EmployeeContratRepository;
 use App\Repository\DossierRepository;
@@ -63,7 +63,7 @@ class AdministrateurRhController extends AbstractController
     }
 
     #[Route('/responsables-rh', name: 'admin_manage_responsables')]
-    public function manageResponsables(EmployeeRepository $employeeRepository): Response
+    public function manageResponsables(EmployeRepository $employeRepository): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -76,7 +76,7 @@ class AdministrateurRhController extends AbstractController
         }
 
         // Récupérer tous les responsables RH
-        $responsables = $employeeRepository->findByRole('ROLE_RESPONSABLE_RH');
+        $responsables = $employeRepository->findByRole('ROLE_RESPONSABLE_RH');
 
         $response = $this->render('administrateur-rh/responsables.html.twig', [
             'responsables' => $responsables
@@ -102,7 +102,7 @@ class AdministrateurRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $employee = new Employee();
+        $employee = new Employe();
         $form = $this->createForm(EmployeeType::class, $employee, [
             'is_new' => true // Nouvel utilisateur
         ]);
@@ -137,7 +137,7 @@ class AdministrateurRhController extends AbstractController
     }
 
     #[Route('/responsables-rh/modifier/{id}', name: 'admin_edit_responsable')]
-    public function editResponsable(Request $request, Employee $employee, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function editResponsable(Request $request, Employe $employee, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -191,7 +191,7 @@ class AdministrateurRhController extends AbstractController
     }
 
     #[Route('/responsables-rh/supprimer/{id}', name: 'admin_delete_responsable')]
-    public function deleteResponsable(Employee $employee, EntityManagerInterface $entityManager): Response
+    public function deleteResponsable(Employe $employee, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {

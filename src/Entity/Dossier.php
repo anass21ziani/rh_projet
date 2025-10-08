@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
-#[ORM\Table(name: '`dossiers`')]
 class Dossier
 {
     #[ORM\Id]
@@ -16,28 +15,25 @@ class Dossier
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'dossiers')]
+    #[ORM\ManyToOne(inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Employee $employee = null;
+    private ?Employe $employe = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    private ?string $nom = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $type = null;
-
     #[ORM\Column(length: 50)]
     private ?string $status = 'pending';
-
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(targetEntity: Placard::class, inversedBy: 'dossiers')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Placard $placard = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
     private Collection $documents;
@@ -45,7 +41,7 @@ class Dossier
     public function __construct()
     {
         $this->documents = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -53,25 +49,27 @@ class Dossier
         return $this->id;
     }
 
-    public function getEmployee(): ?Employee
+    public function getEmploye(): ?Employe
     {
-        return $this->employee;
+        return $this->employe;
     }
 
-    public function setEmployee(?Employee $employee): static
+    public function setEmploye(?Employe $employe): static
     {
-        $this->employee = $employee;
+        $this->employe = $employe;
+
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getNom(): ?string
     {
-        return $this->title;
+        return $this->nom;
     }
 
-    public function setTitle(string $title): static
+    public function setNom(string $nom): static
     {
-        $this->title = $title;
+        $this->nom = $nom;
+
         return $this;
     }
 
@@ -83,17 +81,7 @@ class Dossier
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-        return $this;
-    }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
         return $this;
     }
 
@@ -105,31 +93,37 @@ class Dossier
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-    public function getPlacard(): ?Placard
+    public function getPlacard(): ?string
     {
         return $this->placard;
     }
 
-    public function setPlacard(?Placard $placard): static
+    public function setPlacard(?string $placard): static
     {
         $this->placard = $placard;
+
         return $this;
     }
 
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Document>
+     */
     public function getDocuments(): Collection
     {
         return $this->documents;
@@ -141,16 +135,19 @@ class Dossier
             $this->documents->add($document);
             $document->setDossier($this);
         }
+
         return $this;
     }
 
     public function removeDocument(Document $document): static
     {
         if ($this->documents->removeElement($document)) {
+            // set the owning side to null (unless already changed)
             if ($document->getDossier() === $this) {
                 $document->setDossier(null);
             }
         }
+
         return $this;
     }
 
@@ -161,6 +158,6 @@ class Dossier
 
     public function __toString(): string
     {
-        return $this->title ?? '';
+        return $this->nom ?? '';
     }
 }

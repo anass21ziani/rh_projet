@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\NatureContrat;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,14 +20,14 @@ class EmployeeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName', TextType::class, [
+            ->add('prenom', TextType::class, [
                 'label' => 'Prénom',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Entrez le prénom'
                 ]
             ])
-            ->add('lastName', TextType::class, [
+            ->add('nom', TextType::class, [
                 'label' => 'Nom',
                 'attr' => [
                     'class' => 'form-control',
@@ -41,26 +41,12 @@ class EmployeeType extends AbstractType
                     'placeholder' => 'exemple@uiass.rh'
                 ]
             ])
-            ->add('phone', TextType::class, [
+            ->add('telephone', TextType::class, [
                 'label' => 'Téléphone',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => '+212 6XX XXX XXX'
-                ]
-            ])
-            ->add('hireDate', DateType::class, [
-                'label' => 'Date d\'embauche',
-                'widget' => 'single_text',
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
-            ->add('position', TextType::class, [
-                'label' => 'Poste',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ex: Développeur, Manager, etc.'
                 ]
             ])
             ->add('department', ChoiceType::class, [
@@ -90,7 +76,7 @@ class EmployeeType extends AbstractType
             // Section Contrat
             ->add('natureContrat', EntityType::class, [
                 'class' => NatureContrat::class,
-                'choice_label' => 'libelle',
+                'choice_label' => 'designation',
                 'label' => 'Type de contrat',
                 'mapped' => false,
                 'attr' => [
@@ -101,6 +87,7 @@ class EmployeeType extends AbstractType
                 'label' => 'Date de début du contrat',
                 'widget' => 'single_text',
                 'mapped' => false,
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control'
                 ]
@@ -119,7 +106,7 @@ class EmployeeType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Employee::class,
+            'data_class' => Employe::class,
             'is_new' => true,
         ]);
     }

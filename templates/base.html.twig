@@ -187,6 +187,7 @@
         {% endblock %}
     </head>
     <body>
+        {% if app.request.get('_route') != 'app_home' %}
         <nav class="navbar navbar-expand-lg navbar-light">
             <div class="container">
                 <a class="navbar-brand" href="{{ path('app_dashboard') }}">
@@ -239,6 +240,12 @@
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_documents') }}">
                                             <i class="fas fa-file-alt me-2"></i>Documents
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_nature_contrats') }}">
+                                            <i class="fas fa-file-contract me-2"></i>Natures de Contrats
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_organisations') }}">
+                                            <i class="fas fa-sitemap me-2"></i>Organisations
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_demandes') }}">
                                             <i class="fas fa-envelope me-2"></i>Demandes et Réclamations
@@ -297,6 +304,7 @@
                 </div>
             </div>
         </nav>
+        {% endif %}
 
         <main class="container mt-4">
             {% for message in app.flashes('success') %}
@@ -316,11 +324,13 @@
             {% block body %}{% endblock %}
         </main>
 
+        {% if app.request.get('_route') != 'app_home' %}
         <footer class="footer">
             <div class="container">
                 <p class="mb-0">&copy; 2025 Système de Gestion des Ressources Humaines</p>
             </div>
         </footer>
+        {% endif %}
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
         {% block javascripts %}{% endblock %}

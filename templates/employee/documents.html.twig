@@ -39,7 +39,7 @@
                                     <td>
                                         <span class="badge bg-secondary">{{ document.fileType|upper }}</span>
                                     </td>
-                                    <td>{{ document.dossier.title }}</td>
+                                    <td>{{ document.dossier.nom }}</td>
                                     <td>{{ document.createdAt|date('d/m/Y H:i') }}</td>
                                     <td>
                                         <a href="{{ path('employee_download_document', {'id': document.id}) }}" class="btn btn-sm btn-info">

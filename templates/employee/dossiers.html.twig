@@ -32,9 +32,9 @@
                             <tbody>
                                 {% for dossier in dossiers %}
                                 <tr>
-                                    <td>{{ dossier.title }}</td>
+                                    <td>{{ dossier.nom }}</td>
                                     <td>
-                                        <span class="badge bg-info">{{ dossier.type|title }}</span>
+                                        <span class="badge bg-info">{{ dossier.status|title }}</span>
                                     </td>
                                     <td>{{ dossier.description|length > 50 ? dossier.description|slice(0, 50) ~ '...' : dossier.description }}</td>
                                     <td>{{ dossier.createdAt|date('d/m/Y H:i') }}</td>

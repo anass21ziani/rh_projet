@@ -38,7 +38,6 @@
                                     <th>Nom</th>
                                     <th>Prénom</th>
                                     <th>Email</th>
-                                    <th>Poste</th>
                                     <th>Département</th>
                                     <th>Statut</th>
                                     <th>Statut Contrat</th>
@@ -49,10 +48,9 @@
                                 {% for employe in employees %}
                                 <tr class="{{ not employe.isActive ? 'table-secondary' : '' }}">
                                     <td>{{ employe.id }}</td>
-                                    <td>{{ employe.lastName }}</td>
-                                    <td>{{ employe.firstName }}</td>
+                                    <td>{{ employe.nom }}</td>
+                                    <td>{{ employe.prenom }}</td>
                                     <td>{{ employe.email }}</td>
-                                    <td>{{ employe.position }}</td>
                                     <td>{{ employe.department }}</td>
                                     <td>
                                         {% if employe.isActive %}

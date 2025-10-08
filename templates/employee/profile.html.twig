@@ -23,11 +23,11 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <td><strong>Nom :</strong></td>
-                                        <td>{{ employee.lastName }}</td>
+                                        <td>{{ employee.nom }}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>Prénom :</strong></td>
-                                        <td>{{ employee.firstName }}</td>
+                                        <td>{{ employee.prenom }}</td>
                                     </tr>
                                     <tr>
                                         <td><strong>Email :</strong></td>
@@ -35,7 +35,7 @@
                                     </tr>
                                     <tr>
                                         <td><strong>Téléphone :</strong></td>
-                                        <td>{{ employee.phone ?: 'Non renseigné' }}</td>
+                                        <td>{{ employee.telephone ?: 'Non renseigné' }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -49,20 +49,8 @@
                             <div class="card-body">
                                 <table class="table table-borderless">
                                     <tr>
-                                        <td><strong>Poste :</strong></td>
-                                        <td>{{ employee.position ?: 'Non renseigné' }}</td>
-                                    </tr>
-                                    <tr>
                                         <td><strong>Département :</strong></td>
                                         <td>{{ employee.department ?: 'Non renseigné' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Date d'embauche :</strong></td>
-                                        <td>{{ employee.hireDate ? employee.hireDate|date('d/m/Y') : 'Non renseignée' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Date de création :</strong></td>
-                                        <td>{{ employee.createdAt ? employee.createdAt|date('d/m/Y H:i') : 'Non renseignée' }}</td>
                                     </tr>
                                 </table>
                             </div>

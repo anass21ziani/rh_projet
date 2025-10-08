@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\DocumentRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DocumentRepository::class)]
-#[ORM\Table(name: '`documents`')]
 class Document
 {
     #[ORM\Id]
@@ -14,38 +16,52 @@ class Document
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Dossier::class, inversedBy: 'documents')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Dossier $dossier = null;
-
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $reference = null;
+    #[ORM\Column(length: 10, unique: true)]
+    private ?string $abreviation = null;
 
     #[ORM\Column(length: 255)]
+    private ?string $libelleComplet = null;
+
+    #[ORM\Column(length: 100)]
+    private ?string $typeDocument = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $usage = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $filename = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $fileType = null;
 
-    #[ORM\Column(length: 500)]
+    #[ORM\Column(length: 500, nullable: true)]
     private ?string $filePath = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $uploadedBy = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $reference = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne(targetEntity: TypeDocument::class, inversedBy: 'documents')]
-    #[ORM\JoinColumn(nullable: true)]
-    private ?TypeDocument $typeDocument = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $uploadedBy = null;
 
     #[ORM\Column(type: 'boolean')]
     private bool $obligatoire = false;
 
+    #[ORM\Column(type: Types::BIGINT, nullable: true)]
+    private ?int $fileSize = null;
+
+    #[ORM\ManyToOne(inversedBy: 'documents')]
+    private ?Dossier $dossier = null;
+
+    #[ORM\OneToMany(targetEntity: NatureContratTypeDocument::class, mappedBy: 'document', cascade: ['persist', 'remove'])]
+    private Collection $natureContratTypeDocuments;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->natureContratTypeDocuments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -53,25 +69,51 @@ class Document
         return $this->id;
     }
 
-    public function getDossier(): ?Dossier
+    public function getAbreviation(): ?string
     {
-        return $this->dossier;
+        return $this->abreviation;
     }
 
-    public function setDossier(?Dossier $dossier): static
+    public function setAbreviation(string $abreviation): static
     {
-        $this->dossier = $dossier;
+        $this->abreviation = $abreviation;
+
         return $this;
     }
 
-    public function getReference(): ?string
+    public function getLibelleComplet(): ?string
     {
-        return $this->reference;
+        return $this->libelleComplet;
     }
 
-    public function setReference(string $reference): static
+    public function setLibelleComplet(string $libelleComplet): static
     {
-        $this->reference = $reference;
+        $this->libelleComplet = $libelleComplet;
+
+        return $this;
+    }
+
+    public function getTypeDocument(): ?string
+    {
+        return $this->typeDocument;
+    }
+
+    public function setTypeDocument(string $typeDocument): static
+    {
+        $this->typeDocument = $typeDocument;
+
+        return $this;
+    }
+
+    public function getUsage(): ?string
+    {
+        return $this->usage;
+    }
+
+    public function setUsage(string $usage): static
+    {
+        $this->usage = $usage;
+
         return $this;
     }
 
@@ -80,9 +122,10 @@ class Document
         return $this->filename;
     }
 
-    public function setFilename(string $filename): static
+    public function setFilename(?string $filename): static
     {
         $this->filename = $filename;
+
         return $this;
     }
 
@@ -91,9 +134,10 @@ class Document
         return $this->fileType;
     }
 
-    public function setFileType(string $fileType): static
+    public function setFileType(?string $fileType): static
     {
         $this->fileType = $fileType;
+
         return $this;
     }
 
@@ -102,20 +146,22 @@ class Document
         return $this->filePath;
     }
 
-    public function setFilePath(string $filePath): static
+    public function setFilePath(?string $filePath): static
     {
         $this->filePath = $filePath;
+
         return $this;
     }
 
-    public function getUploadedBy(): ?string
+    public function getReference(): ?string
     {
-        return $this->uploadedBy;
+        return $this->reference;
     }
 
-    public function setUploadedBy(string $uploadedBy): static
+    public function setReference(?string $reference): static
     {
-        $this->uploadedBy = $uploadedBy;
+        $this->reference = $reference;
+
         return $this;
     }
 
@@ -127,43 +173,18 @@ class Document
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
-    public function getFileSize(): ?int
+    public function getUploadedBy(): ?string
     {
-        if ($this->filePath && file_exists($this->filePath)) {
-            return filesize($this->filePath);
-        }
-        return null;
+        return $this->uploadedBy;
     }
 
-    public function getFileSizeFormatted(): string
+    public function setUploadedBy(?string $uploadedBy): static
     {
-        $size = $this->getFileSize();
-        if (!$size) {
-            return 'N/A';
-        }
-
-        $units = ['B', 'KB', 'MB', 'GB'];
-        $unitIndex = 0;
-        
-        while ($size >= 1024 && $unitIndex < count($units) - 1) {
-            $size /= 1024;
-            $unitIndex++;
-        }
-        
-        return round($size, 2) . ' ' . $units[$unitIndex];
-    }
-
-    public function getTypeDocument(): ?TypeDocument
-    {
-        return $this->typeDocument;
-    }
-
-    public function setTypeDocument(?TypeDocument $typeDocument): static
-    {
-        $this->typeDocument = $typeDocument;
+        $this->uploadedBy = $uploadedBy;
 
         return $this;
     }
@@ -180,8 +201,73 @@ class Document
         return $this;
     }
 
-    public function __toString(): string
+    public function getFileSize(): ?int
     {
-        return $this->filename ?? '';
+        return $this->fileSize;
+    }
+
+    public function setFileSize(?int $fileSize): static
+    {
+        $this->fileSize = $fileSize;
+
+        return $this;
+    }
+
+    public function getFileSizeFormatted(): string
+    {
+        if (!$this->fileSize) {
+            return 'N/A';
+        }
+
+        $bytes = $this->fileSize;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    public function getDossier(): ?Dossier
+    {
+        return $this->dossier;
+    }
+
+    public function setDossier(?Dossier $dossier): static
+    {
+        $this->dossier = $dossier;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NatureContratTypeDocument>
+     */
+    public function getNatureContratTypeDocuments(): Collection
+    {
+        return $this->natureContratTypeDocuments;
+    }
+
+    public function addNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
+    {
+        if (!$this->natureContratTypeDocuments->contains($natureContratTypeDocument)) {
+            $this->natureContratTypeDocuments->add($natureContratTypeDocument);
+            $natureContratTypeDocument->setDocument($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
+    {
+        if ($this->natureContratTypeDocuments->removeElement($natureContratTypeDocument)) {
+            // set the owning side to null (unless already changed)
+            if ($natureContratTypeDocument->getDocument() === $this) {
+                $natureContratTypeDocument->setDocument(null);
+            }
+        }
+
+        return $this;
     }
 }

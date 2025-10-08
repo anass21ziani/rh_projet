@@ -37,19 +37,19 @@ class DossierRepository extends ServiceEntityRepository
     public function findByEmployee(int $employeeId): array
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.employee = :employeeId')
+            ->andWhere('d.employe = :employeeId')
             ->setParameter('employeeId', $employeeId)
-            ->orderBy('d.createdAt', 'DESC')
+            ->orderBy('d.id', 'DESC')
             ->getQuery()
             ->getResult();
     }
 
-    public function findByType(string $type): array
+    public function findByStatus(string $status): array
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.type = :type')
-            ->setParameter('type', $type)
-            ->orderBy('d.createdAt', 'DESC')
+            ->andWhere('d.status = :status')
+            ->setParameter('status', $status)
+            ->orderBy('d.id', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -57,7 +57,7 @@ class DossierRepository extends ServiceEntityRepository
     public function findRecentDossiers(int $limit = 10): array
     {
         return $this->createQueryBuilder('d')
-            ->orderBy('d.createdAt', 'DESC')
+            ->orderBy('d.id', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -68,18 +68,18 @@ class DossierRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('d')
             ->leftJoin('d.documents', 'doc')
             ->addSelect('doc')
-            ->orderBy('d.createdAt', 'DESC')
+            ->orderBy('d.id', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
 
-    public function searchByTitle(string $searchTerm): array
+    public function searchByNom(string $searchTerm): array
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.title LIKE :searchTerm')
+            ->andWhere('d.nom LIKE :searchTerm')
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->orderBy('d.title', 'ASC')
+            ->orderBy('d.nom', 'ASC')
             ->getQuery()
             ->getResult();
     }

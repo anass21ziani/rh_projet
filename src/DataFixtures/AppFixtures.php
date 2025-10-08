@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\NatureContrat;
 use App\Entity\EmployeeContrat;
 use App\Entity\Dossier;
@@ -27,18 +27,18 @@ class AppFixtures extends Fixture
     {
         // Créer les types de contrats
         $cdi = new NatureContrat();
-        $cdi->setLibelle('CDI');
-        $cdi->setDescription('Contrat à Durée Indéterminée');
+        $cdi->setCode('CDI');
+        $cdi->setDesignation('Contrat à Durée Indéterminée');
         $manager->persist($cdi);
 
         $cdd = new NatureContrat();
-        $cdd->setLibelle('CDD');
-        $cdd->setDescription('Contrat à Durée Déterminée');
+        $cdd->setCode('CDD');
+        $cdd->setDesignation('Contrat à Durée Déterminée');
         $manager->persist($cdd);
 
         $stage = new NatureContrat();
-        $stage->setLibelle('Stage');
-        $stage->setDescription('Période de stage');
+        $stage->setCode('STAGE');
+        $stage->setDesignation('Période de stage');
         $manager->persist($stage);
 
         // Créer les types de documents
@@ -64,37 +64,31 @@ class AppFixtures extends Fixture
         }
 
         // Créer les utilisateurs
-        $administrateurRh = new Employee();
-        $administrateurRh->setFirstName('Admin');
-        $administrateurRh->setLastName('RH');
+        $administrateurRh = new Employe();
+        $administrateurRh->setNom('Admin');
+        $administrateurRh->setPrenom('RH');
         $administrateurRh->setEmail('admin@uiass.rh');
-        $administrateurRh->setPhone('+212 6XX XXX XXX');
-        $administrateurRh->setHireDate(new \DateTime('2020-01-01'));
-        $administrateurRh->setPosition('Administrateur RH');
+        $administrateurRh->setTelephone('+212 6XX XXX XXX');
         $administrateurRh->setDepartment('RH');
         $administrateurRh->setRoles(['ROLE_ADMINISTRATEUR_RH']);
         $administrateurRh->setPassword($this->passwordHasher->hashPassword($administrateurRh, 'password123'));
         $manager->persist($administrateurRh);
 
-        $responsableRh = new Employee();
-        $responsableRh->setFirstName('Responsable');
-        $responsableRh->setLastName('RH');
+        $responsableRh = new Employe();
+        $responsableRh->setNom('Responsable');
+        $responsableRh->setPrenom('RH');
         $responsableRh->setEmail('rh@uiass.rh');
-        $responsableRh->setPhone('+212 6XX XXX XXX');
-        $responsableRh->setHireDate(new \DateTime('2021-01-01'));
-        $responsableRh->setPosition('Responsable RH');
+        $responsableRh->setTelephone('+212 6XX XXX XXX');
         $responsableRh->setDepartment('RH');
         $responsableRh->setRoles(['ROLE_RESPONSABLE_RH']);
         $responsableRh->setPassword($this->passwordHasher->hashPassword($responsableRh, 'password123'));
         $manager->persist($responsableRh);
 
-        $employe = new Employee();
-        $employe->setFirstName('John');
-        $employe->setLastName('Doe');
+        $employe = new Employe();
+        $employe->setNom('John');
+        $employe->setPrenom('Doe');
         $employe->setEmail('employe@uiass.rh');
-        $employe->setPhone('+212 6XX XXX XXX');
-        $employe->setHireDate(new \DateTime('2022-01-01'));
-        $employe->setPosition('Développeur');
+        $employe->setTelephone('+212 6XX XXX XXX');
         $employe->setDepartment('IT');
         $employe->setRoles(['ROLE_EMPLOYEE']);
         $employe->setPassword($this->passwordHasher->hashPassword($employe, 'password123'));
@@ -102,18 +96,17 @@ class AppFixtures extends Fixture
 
         // Créer un contrat pour l'employé
         $contrat = new EmployeeContrat();
-        $contrat->setEmployee($employe);
+        $contrat->setEmploye($employe);
         $contrat->setNatureContrat($cdi);
-        $contrat->setStartDate(new \DateTime('2022-01-01'));
+        $contrat->setDateDebut(new \DateTime('2022-01-01'));
         $contrat->setStatut('actif');
         $manager->persist($contrat);
 
         // Créer un dossier pour l'employé
         $dossier = new Dossier();
-        $dossier->setEmployee($employe);
-        $dossier->setTitle('Dossier administratif');
+        $dossier->setEmploye($employe);
+        $dossier->setNom('Dossier administratif');
         $dossier->setDescription('Dossier contenant tous les documents administratifs de l\'employé');
-        $dossier->setType('administratif');
         $dossier->setStatus('completed');
         $manager->persist($dossier);
 
@@ -128,12 +121,18 @@ class AppFixtures extends Fixture
 
         // Créer un document exemple
         $document = new Document();
+        $document->setAbreviation('CTR');
+        $document->setLibelleComplet('Contrat de travail');
+        $document->setTypeDocument('RH');
+        $document->setUsage('Document juridique liant l\'employé');
         $document->setDossier($dossier);
         $document->setReference('DOC-2025-001');
         $document->setFilename('contrat_emploi.pdf');
         $document->setFileType('application/pdf');
         $document->setFilePath('/documents/contrat_emploi.pdf');
         $document->setUploadedBy('admin@uiass.rh');
+        $document->setCreatedAt(new \DateTimeImmutable());
+        $document->setObligatoire(true);
         $manager->persist($document);
 
         // Créer des demandes de test

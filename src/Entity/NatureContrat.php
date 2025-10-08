@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NatureContratRepository::class)]
-#[ORM\Table(name: '`nature_contrat`')]
 class NatureContrat
 {
     #[ORM\Id]
@@ -16,26 +15,22 @@ class NatureContrat
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 10, unique: true)]
+    private ?string $code = null;
+
     #[ORM\Column(length: 255)]
-    private ?string $libelle = null;
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
-
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private ?string $designation = null;
 
     #[ORM\OneToMany(targetEntity: EmployeeContrat::class, mappedBy: 'natureContrat')]
     private Collection $employeeContrats;
 
-    #[ORM\ManyToMany(targetEntity: TypeDocument::class, inversedBy: 'natureContrats')]
-    private Collection $typeDocuments;
+    #[ORM\OneToMany(targetEntity: NatureContratTypeDocument::class, mappedBy: 'natureContrat', cascade: ['persist', 'remove'])]
+    private Collection $natureContratTypeDocuments;
 
     public function __construct()
     {
         $this->employeeContrats = new ArrayCollection();
-        $this->typeDocuments = new ArrayCollection();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->natureContratTypeDocuments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -43,39 +38,33 @@ class NatureContrat
         return $this->id;
     }
 
-    public function getLibelle(): ?string
+    public function getCode(): ?string
     {
-        return $this->libelle;
+        return $this->code;
     }
 
-    public function setLibelle(string $libelle): static
+    public function setCode(string $code): static
     {
-        $this->libelle = $libelle;
+        $this->code = $code;
+
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDesignation(): ?string
     {
-        return $this->description;
+        return $this->designation;
     }
 
-    public function setDescription(?string $description): static
+    public function setDesignation(string $designation): static
     {
-        $this->description = $description;
+        $this->designation = $designation;
+
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
+    /**
+     * @return Collection<int, EmployeeContrat>
+     */
     public function getEmployeeContrats(): Collection
     {
         return $this->employeeContrats;
@@ -87,45 +76,54 @@ class NatureContrat
             $this->employeeContrats->add($employeeContrat);
             $employeeContrat->setNatureContrat($this);
         }
+
         return $this;
     }
 
     public function removeEmployeeContrat(EmployeeContrat $employeeContrat): static
     {
         if ($this->employeeContrats->removeElement($employeeContrat)) {
+            // set the owning side to null (unless already changed)
             if ($employeeContrat->getNatureContrat() === $this) {
                 $employeeContrat->setNatureContrat(null);
             }
         }
+
         return $this;
     }
 
     /**
-     * @return Collection<int, TypeDocument>
+     * @return Collection<int, NatureContratTypeDocument>
      */
-    public function getTypeDocuments(): Collection
+    public function getNatureContratTypeDocuments(): Collection
     {
-        return $this->typeDocuments;
+        return $this->natureContratTypeDocuments;
     }
 
-    public function addTypeDocument(TypeDocument $typeDocument): static
+    public function addNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
     {
-        if (!$this->typeDocuments->contains($typeDocument)) {
-            $this->typeDocuments->add($typeDocument);
+        if (!$this->natureContratTypeDocuments->contains($natureContratTypeDocument)) {
+            $this->natureContratTypeDocuments->add($natureContratTypeDocument);
+            $natureContratTypeDocument->setNatureContrat($this);
         }
 
         return $this;
     }
 
-    public function removeTypeDocument(TypeDocument $typeDocument): static
+    public function removeNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
     {
-        $this->typeDocuments->removeElement($typeDocument);
+        if ($this->natureContratTypeDocuments->removeElement($natureContratTypeDocument)) {
+            // set the owning side to null (unless already changed)
+            if ($natureContratTypeDocument->getNatureContrat() === $this) {
+                $natureContratTypeDocument->setNatureContrat(null);
+            }
+        }
 
         return $this;
     }
 
     public function __toString(): string
     {
-        return $this->libelle ?? '';
+        return $this->designation ?? '';
     }
 }

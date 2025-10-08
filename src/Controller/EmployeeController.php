@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\Demande;
-use App\Repository\EmployeeRepository;
+use App\Repository\EmployeRepository;
 use App\Repository\EmployeeContratRepository;
 use App\Repository\DossierRepository;
 use App\Repository\DocumentRepository;
@@ -23,7 +23,7 @@ class EmployeeController extends AbstractController
 {
     #[Route('/dashboard', name: 'employee_dashboard')]
     public function dashboard(
-        EmployeeRepository $employeeRepository,
+        EmployeRepository $employeRepository,
         EmployeeContratRepository $contratRepository,
         DossierRepository $dossierRepository,
         DocumentRepository $documentRepository
@@ -31,8 +31,8 @@ class EmployeeController extends AbstractController
         $employee = $this->getUser();
         
         // Récupérer les informations de l'employé connecté
-        $contrats = $contratRepository->findBy(['employee' => $employee]);
-        $dossiers = $dossierRepository->findBy(['employee' => $employee]);
+        $contrats = $contratRepository->findBy(['employe' => $employee]);
+        $dossiers = $dossierRepository->findBy(['employe' => $employee]);
         $documents = $documentRepository->findBy(['dossier' => $dossiers]);
 
         $response = $this->render('employee/dashboard.html.twig', [
@@ -69,7 +69,7 @@ class EmployeeController extends AbstractController
     public function contrats(EmployeeContratRepository $contratRepository): Response
     {
         $employee = $this->getUser();
-        $contrats = $contratRepository->findBy(['employee' => $employee]);
+        $contrats = $contratRepository->findBy(['employe' => $employee]);
 
         $response = $this->render('employee/contrats.html.twig', [
             'contrats' => $contrats
@@ -86,7 +86,7 @@ class EmployeeController extends AbstractController
     public function dossiers(DossierRepository $dossierRepository): Response
     {
         $employee = $this->getUser();
-        $dossiers = $dossierRepository->findBy(['employee' => $employee]);
+        $dossiers = $dossierRepository->findBy(['employe' => $employee]);
 
         $response = $this->render('employee/dossiers.html.twig', [
             'dossiers' => $dossiers
@@ -128,7 +128,7 @@ class EmployeeController extends AbstractController
         $document = $documentRepository->find($id);
         
         // Vérifier que le document appartient à l'employé
-        if (!$document || $document->getDossier()->getEmployee() !== $employee) {
+        if (!$document || $document->getDossier()->getEmploye() !== $employee) {
             $this->addFlash('error', 'Document non trouvé ou non autorisé !');
             return $this->redirectToRoute('employee_documents');
         }

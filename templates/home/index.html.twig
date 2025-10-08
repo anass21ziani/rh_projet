@@ -1,64 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Système RH{% endblock %}
+{% block title %}Système RH - Accueil{% endblock %}
 
 {% block body %}
-<div class="row">
-    <div class="col-12">
-        {% if app.user %}
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">
-                        <i class="fas fa-home me-2"></i>
-                        Bienvenue, {{ app.user.email|split('@')[0]|title }} !
-                    </h1>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Informations du compte</h4>
-                            <p><strong>Email :</strong> {{ app.user.email }}</p>
-                            <p><strong>Rôles :</strong> 
-                                {% for role in app.user.roles %}
-                                    <span class="badge bg-primary me-1">{{ role }}</span>
-                                {% endfor %}
+<div class="container-fluid" style="margin-top: 0 !important; padding-top: 0 !important;">
+    <div class="row min-vh-100">
+        <!-- Sidebar masquée sur la page d'accueil -->
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-center min-vh-100">
+                <div class="text-center">
+                    <!-- Logo et titre -->
+                    <div class="mb-5">
+                        <i class="fas fa-users fa-5x text-primary mb-3"></i>
+                        <h1 class="display-4 fw-bold text-primary">Système RH</h1>
+                        <p class="lead text-muted">Gestion des Ressources Humaines</p>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="row justify-content-center mb-5">
+                        <div class="col-md-8">
+                            <p class="fs-5 text-muted">
+                                Bienvenue dans notre système de gestion des ressources humaines. 
+                                Accédez à votre espace personnel pour gérer vos informations, 
+                                consulter vos dossiers et effectuer vos demandes.
                             </p>
                         </div>
-                        <div class="col-md-6">
-                            <h4>Accès rapide</h4>
-                            {% if 'ROLE_ADMINISTRATEUR_RH' in app.user.roles %}
-                                <a href="{{ path('administrateur_rh_dashboard') }}" class="btn btn-primary me-2">
-                                    <i class="fas fa-cog me-1"></i>Administrateur RH
-                                </a>
-                            {% endif %}
-                            {% if 'ROLE_RESPONSABLE_RH' in app.user.roles %}
-                                <a href="{{ path('responsable_rh_dashboard') }}" class="btn btn-success me-2">
-                                    <i class="fas fa-users me-1"></i>Responsable RH
-                                </a>
-                            {% endif %}
+                    </div>
+
+                    <!-- Bouton de connexion -->
+                    <div class="mb-4">
+                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Se connecter
+                        </a>
+                    </div>
+
+                    <!-- Informations supplémentaires -->
+                    <div class="row justify-content-center">
+                        <div class="col-md-10">
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <i class="fas fa-user-tie fa-2x text-info mb-3"></i>
+                                            <h5 class="card-title">Employés</h5>
+                                            <p class="card-text text-muted">
+                                                Consultez vos informations personnelles, 
+                                                contrats et dossiers.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <i class="fas fa-file-alt fa-2x text-success mb-3"></i>
+                                            <h5 class="card-title">Documents</h5>
+                                            <p class="card-text text-muted">
+                                                Gérez vos documents administratifs 
+                                                et vos dossiers personnels.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <i class="fas fa-comments fa-2x text-warning mb-3"></i>
+                                            <h5 class="card-title">Demandes</h5>
+                                            <p class="card-text text-muted">
+                                                Effectuez des demandes et suivez 
+                                                leur traitement en temps réel.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <div class="card">
-                <div class="card-header">
-                    <h1 class="mb-0">
-                        <i class="fas fa-building me-2"></i>
-                        Système de Gestion des Ressources Humaines
-                    </h1>
-                </div>
-                <div class="card-body text-center">
-                    <h3>Bienvenue sur notre plateforme RH</h3>
-                    <p class="lead">Gérez efficacement vos ressources humaines avec notre système intégré.</p>
-                    <div class="mt-4">
-                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i>Se connecter
-                        </a>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+        </div>
     </div>
 </div>
+
+<style>
+.min-vh-100 {
+    min-height: 100vh;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-lg {
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.display-4 {
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+</style>
 {% endblock %}

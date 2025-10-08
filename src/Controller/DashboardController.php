@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Repository\EmployeeRepository;
+use App\Repository\EmployeRepository;
 use App\Repository\DossierRepository;
 use App\Repository\DocumentRepository;
 use App\Repository\DemandeRepository;
@@ -15,10 +15,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class DashboardController extends AbstractController
 {
-    #[Route('/', name: 'app_home')]
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(
-        EmployeeRepository $employeeRepository,
+        EmployeRepository $employeRepository,
         DossierRepository $dossierRepository,
         DocumentRepository $documentRepository,
         DemandeRepository $demandeRepository,
@@ -36,7 +35,7 @@ class DashboardController extends AbstractController
         // Sinon, afficher le dashboard global pour les responsables RH et administrateurs
         // KPI généraux
         $kpis = [
-            'total_employees' => $employeeRepository->count([]),
+            'total_employees' => $employeRepository->count([]),
             'total_dossiers' => $dossierRepository->count([]),
             'total_documents' => $documentRepository->count([]),
             'total_demandes' => $demandeRepository->count([]),
@@ -70,7 +69,7 @@ class DashboardController extends AbstractController
         ];
 
         // Statistiques par département
-        $employees_by_department = $employeeRepository->findBy([], ['department' => 'ASC']);
+        $employees_by_department = $employeRepository->findBy([], ['department' => 'ASC']);
         $department_stats = [];
         foreach ($employees_by_department as $employee) {
             $dept = $employee->getDepartment();
@@ -101,8 +100,8 @@ class DashboardController extends AbstractController
     private function renderEmployeeDashboard($employee, EmployeeContratRepository $contratRepository, DossierRepository $dossierRepository, DocumentRepository $documentRepository): Response
     {
         // Récupérer les informations de l'employé connecté
-        $contrats = $contratRepository->findBy(['employee' => $employee]);
-        $dossiers = $dossierRepository->findBy(['employee' => $employee]);
+        $contrats = $contratRepository->findBy(['employe' => $employee]);
+        $dossiers = $dossierRepository->findBy(['employe' => $employee]);
         $documents = $documentRepository->findBy(['dossier' => $dossiers]);
 
         $response = $this->render('employee/dashboard.html.twig', [

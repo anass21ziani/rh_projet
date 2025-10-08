@@ -38,7 +38,7 @@
                                         {% for demande in demandesEnAttente %}
                                         <tr>
                                             <td>
-                                                <strong>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</strong>
+                                                <strong>{{ demande.employe.prenom }} {{ demande.employe.nom }}</strong>
                                                 <br>
                                                 <small class="text-muted">{{ demande.employe.email }}</small>
                                             </td>
@@ -93,7 +93,7 @@
                                         {% for demande in demandesTraitees %}
                                         <tr>
                                             <td>
-                                                <strong>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</strong>
+                                                <strong>{{ demande.employe.prenom }} {{ demande.employe.nom }}</strong>
                                                 <br>
                                                 <small class="text-muted">{{ demande.employe.email }}</small>
                                             </td>

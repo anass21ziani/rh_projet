@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\EmployeeContrat;
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\NatureContrat;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,7 +20,7 @@ class EmployeeContratType extends AbstractType
         $builder
             ->add('employee', EntityType::class, [
                 'label' => 'Employé',
-                'class' => Employee::class,
+                'class' => Employe::class,
                 'choice_label' => 'fullName',
                 'attr' => [
                     'class' => 'form-control'

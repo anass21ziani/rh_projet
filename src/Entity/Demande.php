@@ -33,13 +33,13 @@ class Demande
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $dateReponse = null;
 
-    #[ORM\ManyToOne(targetEntity: Employee::class)]
+    #[ORM\ManyToOne(targetEntity: Employe::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Employee $employe = null;
+    private ?Employe $employe = null;
 
-    #[ORM\ManyToOne(targetEntity: Employee::class)]
+    #[ORM\ManyToOne(targetEntity: Employe::class)]
     #[ORM\JoinColumn(nullable: true)]
-    private ?Employee $responsableRh = null;
+    private ?Employe $responsableRh = null;
 
     public function __construct()
     {
@@ -118,23 +118,23 @@ class Demande
         return $this;
     }
 
-    public function getEmploye(): ?Employee
+    public function getEmploye(): ?Employe
     {
         return $this->employe;
     }
 
-    public function setEmploye(?Employee $employe): static
+    public function setEmploye(?Employe $employe): static
     {
         $this->employe = $employe;
         return $this;
     }
 
-    public function getResponsableRh(): ?Employee
+    public function getResponsableRh(): ?Employe
     {
         return $this->responsableRh;
     }
 
-    public function setResponsableRh(?Employee $responsableRh): static
+    public function setResponsableRh(?Employe $responsableRh): static
     {
         $this->responsableRh = $responsableRh;
         return $this;

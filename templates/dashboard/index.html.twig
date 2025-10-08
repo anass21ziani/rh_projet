@@ -173,7 +173,7 @@
                                     {% for document in recent_documents %}
                                         <tr>
                                             <td>{{ document.filename }}</td>
-                                            <td>{{ document.dossier.title }}</td>
+                                            <td>{{ document.dossier.nom }}</td>
                                             <td>{{ document.createdAt|date('d/m/Y') }}</td>
                                         </tr>
                                     {% endfor %}
@@ -208,7 +208,7 @@
                                     {% for demande in recent_demandes %}
                                         <tr>
                                             <td>{{ demande.titre }}</td>
-                                            <td>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</td>
+                                            <td>{{ demande.employe.prenom }} {{ demande.employe.nom }}</td>
                                             <td>
                                                 {% if demande.statut == 'en_attente' %}
                                                     <span class="badge bg-warning">En attente</span>

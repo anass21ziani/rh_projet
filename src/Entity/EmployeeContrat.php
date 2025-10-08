@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\EmployeeContratRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EmployeeContratRepository::class)]
-#[ORM\Table(name: '`employee_contrat`')]
 class EmployeeContrat
 {
     #[ORM\Id]
@@ -15,29 +16,32 @@ class EmployeeContrat
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Employee::class, inversedBy: 'employeeContrats')]
+    #[ORM\ManyToOne(inversedBy: 'employeeContrats')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Employee $employee = null;
+    private ?Employe $employe = null;
 
-    #[ORM\ManyToOne(targetEntity: NatureContrat::class, inversedBy: 'employeeContrats')]
+    #[ORM\ManyToOne(inversedBy: 'employeeContrats')]
     #[ORM\JoinColumn(nullable: false)]
     private ?NatureContrat $natureContrat = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $startDate = null;
+    private ?\DateTimeInterface $dateDebut = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $endDate = null;
+    private ?\DateTimeInterface $dateFin = null;
 
     #[ORM\Column(length: 50)]
     private ?string $statut = null;
 
-    #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $salaire = null;
+
+    #[ORM\OneToMany(targetEntity: OrganisationEmployeeContrat::class, mappedBy: 'employeeContrat', cascade: ['persist', 'remove'])]
+    private Collection $organisationEmployeeContrats;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->organisationEmployeeContrats = new ArrayCollection();
         $this->statut = 'actif';
     }
 
@@ -46,14 +50,15 @@ class EmployeeContrat
         return $this->id;
     }
 
-    public function getEmployee(): ?Employee
+    public function getEmploye(): ?Employe
     {
-        return $this->employee;
+        return $this->employe;
     }
 
-    public function setEmployee(?Employee $employee): static
+    public function setEmploye(?Employe $employe): static
     {
-        $this->employee = $employee;
+        $this->employe = $employe;
+
         return $this;
     }
 
@@ -65,28 +70,31 @@ class EmployeeContrat
     public function setNatureContrat(?NatureContrat $natureContrat): static
     {
         $this->natureContrat = $natureContrat;
+
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getDateDebut(): ?\DateTimeInterface
     {
-        return $this->startDate;
+        return $this->dateDebut;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): static
+    public function setDateDebut(\DateTimeInterface $dateDebut): static
     {
-        $this->startDate = $startDate;
+        $this->dateDebut = $dateDebut;
+
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getDateFin(): ?\DateTimeInterface
     {
-        return $this->endDate;
+        return $this->dateFin;
     }
 
-    public function setEndDate(?\DateTimeInterface $endDate): static
+    public function setDateFin(?\DateTimeInterface $dateFin): static
     {
-        $this->endDate = $endDate;
+        $this->dateFin = $dateFin;
+
         return $this;
     }
 
@@ -98,17 +106,49 @@ class EmployeeContrat
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
+
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getSalaire(): ?string
     {
-        return $this->createdAt;
+        return $this->salaire;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function setSalaire(?string $salaire): static
     {
-        $this->createdAt = $createdAt;
+        $this->salaire = $salaire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrganisationEmployeeContrat>
+     */
+    public function getOrganisationEmployeeContrats(): Collection
+    {
+        return $this->organisationEmployeeContrats;
+    }
+
+    public function addOrganisationEmployeeContrat(OrganisationEmployeeContrat $organisationEmployeeContrat): static
+    {
+        if (!$this->organisationEmployeeContrats->contains($organisationEmployeeContrat)) {
+            $this->organisationEmployeeContrats->add($organisationEmployeeContrat);
+            $organisationEmployeeContrat->setEmployeeContrat($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganisationEmployeeContrat(OrganisationEmployeeContrat $organisationEmployeeContrat): static
+    {
+        if ($this->organisationEmployeeContrats->removeElement($organisationEmployeeContrat)) {
+            // set the owning side to null (unless already changed)
+            if ($organisationEmployeeContrat->getEmployeeContrat() === $this) {
+                $organisationEmployeeContrat->setEmployeeContrat(null);
+            }
+        }
+
         return $this;
     }
 
@@ -119,9 +159,9 @@ class EmployeeContrat
 
     public function isExpired(): bool
     {
-        if (!$this->endDate) {
+        if (!$this->dateFin) {
             return false;
         }
-        return $this->endDate < new \DateTime();
+        return $this->dateFin < new \DateTime();
     }
 }

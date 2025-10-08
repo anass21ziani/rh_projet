@@ -39,7 +39,7 @@ class EmployeeContratRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ec')
             ->andWhere('ec.statut = :statut')
             ->setParameter('statut', 'actif')
-            ->orderBy('ec.startDate', 'DESC')
+            ->orderBy('ec.dateDebut', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -47,9 +47,9 @@ class EmployeeContratRepository extends ServiceEntityRepository
     public function findByEmployee(int $employeeId): array
     {
         return $this->createQueryBuilder('ec')
-            ->andWhere('ec.employee = :employeeId')
+            ->andWhere('ec.employe = :employeeId')
             ->setParameter('employeeId', $employeeId)
-            ->orderBy('ec.startDate', 'DESC')
+            ->orderBy('ec.dateDebut', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -61,11 +61,11 @@ class EmployeeContratRepository extends ServiceEntityRepository
 
         return $this->createQueryBuilder('ec')
             ->andWhere('ec.statut = :statut')
-            ->andWhere('ec.endDate <= :date')
-            ->andWhere('ec.endDate IS NOT NULL')
+            ->andWhere('ec.dateFin <= :date')
+            ->andWhere('ec.dateFin IS NOT NULL')
             ->setParameter('statut', 'actif')
             ->setParameter('date', $date)
-            ->orderBy('ec.endDate', 'ASC')
+            ->orderBy('ec.dateFin', 'ASC')
             ->getQuery()
             ->getResult();
     }

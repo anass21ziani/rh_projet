@@ -1,6 +1,6 @@
 {% extends 'base_sidebar.html.twig' %}
 
-{% block title %}Documents du Dossier - {{ dossier.title }}{% endblock %}
+{% block title %}Documents du Dossier - {{ dossier.nom }}{% endblock %}
 
 {% block body %}
 <div class="row">
@@ -13,7 +13,7 @@
                         Documents du Dossier
                     </h1>
                     <p class="mb-0 text-muted">
-                        <strong>{{ dossier.title }}</strong> - {{ dossier.employee.firstName }} {{ dossier.employee.lastName }}
+                        <strong>{{ dossier.nom }}</strong> - {{ dossier.employe.prenom }} {{ dossier.employe.nom }}
                     </p>
                 </div>
                 <div>
@@ -98,7 +98,7 @@
                                     <td>{{ document.id }}</td>
                                     <td>
                                         {% if document.typeDocument %}
-                                            <span class="badge bg-primary">{{ document.typeDocument.nom }}</span>
+                                            <span class="badge bg-primary">{{ document.typeDocument }}</span>
                                         {% else %}
                                             <span class="badge bg-secondary">Non défini</span>
                                         {% endif %}

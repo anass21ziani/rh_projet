@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\EmployeeContrat;
 use App\Entity\Dossier;
 use App\Entity\Document;
@@ -14,7 +14,7 @@ use App\Form\DossierType;
 use App\Form\DocumentType;
 use App\Form\ReponseDemandeType;
 use App\Form\PlacardType;
-use App\Repository\EmployeeRepository;
+use App\Repository\EmployeRepository;
 use App\Repository\EmployeeContratRepository;
 use App\Repository\DossierRepository;
 use App\Repository\DocumentRepository;
@@ -60,7 +60,7 @@ class ResponsableRhController extends AbstractController
     }
 
     #[Route('/employes', name: 'responsable_manage_employes')]
-    public function manageEmployes(Request $request, EmployeeRepository $employeeRepository): Response
+    public function manageEmployes(Request $request, EmployeRepository $employeRepository): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -77,9 +77,9 @@ class ResponsableRhController extends AbstractController
         
         // Récupérer les employés selon le filtre
         if ($showAll) {
-            $employees = $employeeRepository->findByRole('ROLE_EMPLOYEE');
+            $employees = $employeRepository->findByRole('ROLE_EMPLOYEE');
         } else {
-            $employees = $employeeRepository->findActiveByRole('ROLE_EMPLOYEE');
+            $employees = $employeRepository->findActiveByRole('ROLE_EMPLOYEE');
         }
 
         $response = $this->render('responsable-rh/employes.html.twig', [
@@ -101,7 +101,7 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $employee = new Employee();
+        $employee = new Employe();
         $form = $this->createForm(EmployeeType::class, $employee);
         $form->handleRequest($request);
 
@@ -118,10 +118,25 @@ class ResponsableRhController extends AbstractController
 
             // Créer le contrat
             $contrat = new EmployeeContrat();
-            $contrat->setEmployee($employee);
+            $contrat->setEmploye($employee);
             $contrat->setNatureContrat($form->get('natureContrat')->getData());
-            $contrat->setStartDate($form->get('dateDebutContrat')->getData());
-            $contrat->setEndDate($form->get('dateFinContrat')->getData());
+            
+            // Vérifier que la date de début n'est pas nulle
+            $dateDebut = $form->get('dateDebutContrat')->getData();
+            if ($dateDebut === null) {
+                $this->addFlash('error', 'La date de début du contrat est obligatoire.');
+                return $this->render('responsable-rh/add_employe.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
+            $contrat->setDateDebut($dateDebut);
+            
+            // La date de fin est optionnelle
+            $dateFin = $form->get('dateFinContrat')->getData();
+            if ($dateFin !== null) {
+                $contrat->setDateFin($dateFin);
+            }
+            
             $contrat->setStatut('actif');
 
             $entityManager->persist($employee);
@@ -150,7 +165,7 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $employee = new Employee();
+        $employee = new Employe();
         $form = $this->createForm(EmployeeType::class, $employee, [
             'is_new' => true // Nouvel utilisateur
         ]);
@@ -186,7 +201,7 @@ class ResponsableRhController extends AbstractController
 
 
     #[Route('/employes/toggle-status/{id}', name: 'responsable_toggle_employe_status')]
-    public function toggleEmployeStatus(Employee $employee, EntityManagerInterface $entityManager): Response
+    public function toggleEmployeStatus(Employe $employee, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -214,13 +229,13 @@ class ResponsableRhController extends AbstractController
     }
 
     #[Route('/employes/{id}/details', name: 'responsable_view_employe_details')]
-    public function viewEmployeDetails(int $id, EmployeeRepository $employeeRepository): Response
+    public function viewEmployeDetails(int $id, EmployeRepository $employeRepository): Response
     {
         if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
             return $this->redirectToRoute('app_login');
         }
 
-        $employe = $employeeRepository->find($id);
+        $employe = $employeRepository->find($id);
         if (!$employe) {
             $this->addFlash('error', 'Employé non trouvé !');
             return $this->redirectToRoute('responsable_manage_employes');
@@ -418,7 +433,15 @@ class ResponsableRhController extends AbstractController
             $file = $form->get('file')->getData();
             if ($file) {
                 $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-                $originalExtension = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $originalExtension = strtolower(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION));
+                
+                // Validation de l'extension
+                $allowedExtensions = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'];
+                if (!in_array($originalExtension, $allowedExtensions)) {
+                    $this->addFlash('error', 'Type de fichier non autorisé. Formats acceptés : PDF, DOC, DOCX, JPG, PNG, GIF');
+                    return $this->redirectToRoute('responsable_add_document');
+                }
+                
                 $safeFilename = $this->sanitizeFilename($originalFilename);
                 $newFilename = $safeFilename.'-'.uniqid().'.'.$originalExtension;
 
@@ -884,5 +907,35 @@ class ResponsableRhController extends AbstractController
             ->findOneBy(['reference' => $reference]);
         
         return $existingDocument !== null;
+    }
+
+    #[Route('/contrats', name: 'responsable_manage_contrats')]
+    public function manageContrats(EmployeeContratRepository $contratRepository): Response
+    {
+        $contrats = $contratRepository->findAll();
+        
+        return $this->render('responsable-rh/contrats.html.twig', [
+            'contrats' => $contrats,
+        ]);
+    }
+
+    #[Route('/nature-contrats', name: 'responsable_manage_nature_contrats')]
+    public function manageNatureContrats(NatureContratRepository $natureContratRepository): Response
+    {
+        $natureContrats = $natureContratRepository->findAll();
+        
+        return $this->render('responsable-rh/nature_contrats.html.twig', [
+            'natureContrats' => $natureContrats,
+        ]);
+    }
+
+    #[Route('/organisations', name: 'responsable_manage_organisations')]
+    public function manageOrganisations(OrganisationRepository $organisationRepository): Response
+    {
+        $organisations = $organisationRepository->findAll();
+        
+        return $this->render('responsable-rh/organisations.html.twig', [
+            'organisations' => $organisations,
+        ]);
     }
 }

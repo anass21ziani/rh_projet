@@ -2,8 +2,8 @@
 
 namespace App\Security;
 
-use App\Entity\Employee;
-use App\Repository\EmployeeRepository;
+use App\Entity\Employe;
+use App\Repository\EmployeRepository;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,13 +12,13 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class UserProvider implements UserProviderInterface
 {
     public function __construct(
-        private EmployeeRepository $employeeRepository
+        private EmployeRepository $employeRepository
     ) {
     }
 
     public function refreshUser(UserInterface $user): UserInterface
     {
-        if (!$user instanceof Employee) {
+        if (!$user instanceof Employe) {
             throw new UnsupportedUserException(sprintf('Invalid user class "%s".', get_class($user)));
         }
 
@@ -27,12 +27,12 @@ class UserProvider implements UserProviderInterface
 
     public function supportsClass(string $class): bool
     {
-        return Employee::class === $class;
+        return Employe::class === $class;
     }
 
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        $user = $this->employeeRepository->findOneBy(['email' => $identifier]);
+        $user = $this->employeRepository->findOneBy(['email' => $identifier]);
 
         if (!$user) {
             throw new UserNotFoundException(sprintf('User with email "%s" not found.', $identifier));

@@ -43,7 +43,7 @@
                             <div class="alert alert-{{ demande.statut == 'acceptee' ? 'success' : 'warning' }}">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <strong>{{ demande.responsableRh.firstName }} {{ demande.responsableRh.lastName }}</strong>
+                                        <strong>{{ demande.responsableRh.prenom }} {{ demande.responsableRh.nom }}</strong>
                                         <br>
                                         <small class="text-muted">{{ demande.dateReponse|date('d/m/Y à H:i') }}</small>
                                     </div>

@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Dossier;
-use App\Entity\Employee;
+use App\Entity\Employe;
 use App\Entity\Placard;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -19,16 +19,16 @@ class DossierType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('employee', EntityType::class, [
+            ->add('employe', EntityType::class, [
                 'label' => 'Employé',
-                'class' => Employee::class,
+                'class' => Employe::class,
                 'choice_label' => 'fullName',
                 'attr' => [
                     'class' => 'form-control'
                 ]
             ])
-            ->add('title', TextType::class, [
-                'label' => 'Titre du dossier',
+            ->add('nom', TextType::class, [
+                'label' => 'Nom du dossier',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Ex: Dossier administratif, Dossier médical'

@@ -4,34 +4,89 @@ namespace App\Form;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
-use App\Entity\TypeDocument;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\Validator\FileExtension;
+use Symfony\Component\Validator\Constraints\File;
 
 class DocumentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('dossier', EntityType::class, [
-                'label' => 'Dossier',
-                'class' => Dossier::class,
-                'choice_label' => 'title',
+            ->add('abreviation', TextType::class, [
+                'label' => 'Abréviation',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: CIN, CV, DIP...'
+                ]
+            ])
+            ->add('libelleComplet', TextType::class, [
+                'label' => 'Libellé Complet',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: Carte d\'identité nationale'
+                ]
+            ])
+            ->add('typeDocument', TextType::class, [
+                'label' => 'Type de Document',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: Identité, Diplôme, RH...'
+                ]
+            ])
+            ->add('usage', TextareaType::class, [
+                'label' => 'Usage',
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 3,
+                    'placeholder' => 'Description de l\'usage du document'
+                ]
+            ])
+            ->add('obligatoire', CheckboxType::class, [
+                'label' => 'Document Obligatoire',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input'
+                ]
+            ])
+            ->add('file', FileType::class, [
+                'label' => 'Fichier',
+                'required' => false,
+                'mapped' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '10M',
+                        'disallowEmptyMessage' => 'Veuillez sélectionner un fichier',
+                    ])
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'accept' => '.pdf,.doc,.docx,.jpg,.jpeg,.png,.gif'
+                ]
+            ])
+            ->add('filename', TextType::class, [
+                'label' => 'Nom du Fichier',
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control'
                 ]
             ])
-            ->add('typeDocument', EntityType::class, [
-                'label' => 'Type de document',
-                'class' => TypeDocument::class,
-                'choice_label' => 'nom',
+            ->add('fileType', TextType::class, [
+                'label' => 'Type de Fichier',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('filePath', TextType::class, [
+                'label' => 'Chemin du Fichier',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control'
@@ -42,37 +97,30 @@ class DocumentType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Laisser vide pour génération automatique (ex: DOC-2025-0001)'
+                    'placeholder' => 'Référence unique du document'
                 ]
             ])
-            ->add('filename', TextType::class, [
-                'label' => 'Nom du fichier',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ex: contrat_emploi.pdf'
-                ]
-            ])
-            ->add('obligatoire', CheckboxType::class, [
-                'label' => 'Document obligatoire',
+            ->add('createdAt', DateTimeType::class, [
+                'label' => 'Date de Création',
+                'widget' => 'single_text',
                 'required' => false,
                 'attr' => [
-                    'class' => 'form-check-input'
+                    'class' => 'form-control'
                 ]
             ])
-            ->add('file', FileType::class, [
-                'label' => 'Fichier',
-                'mapped' => false,
-                'required' => $options['is_new'] ?? true,
-                'constraints' => [
-                    new FileExtension([
-                        'extensions' => ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'txt', 'gif', 'bmp', 'tiff', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', 'mp4', 'avi', 'mov', 'wmv', 'mp3', 'wav', 'flac'],
-                        'maxSize' => 10 * 1024 * 1024, // 10MB en bytes
-                        'message' => 'Extensions autorisées : PDF, DOC, DOCX, JPG, PNG, TXT, GIF, BMP, TIFF, XLS, XLSX, PPT, PPTX, ZIP, RAR, MP4, AVI, MOV, WMV, MP3, WAV, FLAC'
-                    ])
-                ],
+            ->add('uploadedBy', TextType::class, [
+                'label' => 'Uploadé par',
+                'required' => false,
                 'attr' => [
-                    'class' => 'form-control',
-                    'accept' => '.pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.gif,.bmp,.tiff,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.mp4,.avi,.mov,.wmv,.mp3,.wav,.flac'
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('dossier', EntityType::class, [
+                'class' => Dossier::class,
+                'choice_label' => 'nom',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control'
                 ]
             ]);
     }

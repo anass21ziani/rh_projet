@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Demande;
-use App\Entity\Employee;
+use App\Entity\Employe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,7 +20,7 @@ class DemandeRepository extends ServiceEntityRepository
     /**
      * Trouve les demandes d'un employé
      */
-    public function findByEmploye(Employee $employe): array
+    public function findByEmploye(Employe $employe): array
     {
         return $this->createQueryBuilder('d')
             ->where('d.employe = :employe')
@@ -46,7 +46,7 @@ class DemandeRepository extends ServiceEntityRepository
     /**
      * Trouve les demandes traitées par un responsable RH
      */
-    public function findTraiteesParResponsable(Employee $responsableRh): array
+    public function findTraiteesParResponsable(Employe $responsableRh): array
     {
         return $this->createQueryBuilder('d')
             ->where('d.responsableRh = :responsableRh')

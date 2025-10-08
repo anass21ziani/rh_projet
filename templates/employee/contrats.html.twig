@@ -32,9 +32,9 @@
                             <tbody>
                                 {% for contrat in contrats %}
                                 <tr>
-                                    <td>{{ contrat.natureContrat.libelle }}</td>
-                                    <td>{{ contrat.startDate|date('d/m/Y') }}</td>
-                                    <td>{{ contrat.endDate ? contrat.endDate|date('d/m/Y') : 'Non définie' }}</td>
+                                    <td>{{ contrat.natureContrat.designation }}</td>
+                                    <td>{{ contrat.dateDebut|date('d/m/Y') }}</td>
+                                    <td>{{ contrat.dateFin ? contrat.dateFin|date('d/m/Y') : 'Non définie' }}</td>
                                     <td>
                                         <span class="badge bg-{{ contrat.statut == 'actif' ? 'success' : (contrat.statut == 'terminé' ? 'danger' : 'warning') }}">
                                             {{ contrat.statut|title }}
