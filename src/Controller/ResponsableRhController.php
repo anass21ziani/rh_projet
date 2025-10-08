@@ -9,6 +9,8 @@ use App\Entity\Document;
 use App\Entity\Demande;
 use App\Entity\Placard;
 use App\Entity\NatureContrat;
+use App\Entity\Organisation;
+use App\Entity\OrganisationEmployeeContrat;
 use App\Form\EmployeeType;
 use App\Form\DossierType;
 use App\Form\DocumentType;
@@ -21,6 +23,10 @@ use App\Repository\DocumentRepository;
 use App\Repository\DemandeRepository;
 use App\Repository\PlacardRepository;
 use App\Repository\NatureContratRepository;
+use App\Repository\NatureContratTypeDocumentRepository;
+use App\Repository\OrganisationRepository;
+use App\Form\OrganisationType;
+use App\Form\OrganisationEmployeeContratType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -153,7 +159,7 @@ class ResponsableRhController extends AbstractController
     }
 
     #[Route('/employes/ajouter', name: 'responsable_add_employe')]
-    public function addEmploye(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    public function addEmploye(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, NatureContratRepository $natureContratRepository, OrganisationRepository $organisationRepository): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -166,9 +172,7 @@ class ResponsableRhController extends AbstractController
         }
 
         $employee = new Employe();
-        $form = $this->createForm(EmployeeType::class, $employee, [
-            'is_new' => true // Nouvel utilisateur
-        ]);
+        $form = $this->createForm(EmployeeType::class, $employee);
 
         $form->handleRequest($request);
 
@@ -183,6 +187,80 @@ class ResponsableRhController extends AbstractController
             
             $entityManager->persist($employee);
             $entityManager->flush();
+
+               // Créer le contrat principal si les données sont fournies
+               $natureContratId = $form->get('natureContrat')->getData();
+               $dateDebutContrat = $form->get('dateDebutContrat')->getData();
+               $dateFinContrat = $form->get('dateFinContrat')->getData();
+               
+               if ($natureContratId && $dateDebutContrat) {
+                   $natureContrat = $natureContratRepository->find($natureContratId);
+                   
+                   if ($natureContrat) {
+                       $contrat = new EmployeeContrat();
+                       $contrat->setEmploye($employee);
+                       $contrat->setNatureContrat($natureContrat->getDesignation());
+                       $contrat->setDateDebut($dateDebutContrat);
+                       $contrat->setDateFin($dateFinContrat);
+                       $contrat->setStatut('actif');
+                       
+                       $entityManager->persist($contrat);
+                       
+                       // Assigner à l'organisation si sélectionnée
+                       $organisationId = $form->get('organisation')->getData();
+                       if ($organisationId) {
+                           $organisation = $organisationRepository->find($organisationId);
+                           
+                           if ($organisation) {
+                               $orgEmployeeContrat = new OrganisationEmployeeContrat();
+                               $orgEmployeeContrat->setEmployeeContrat($contrat);
+                               $orgEmployeeContrat->setOrganisation($organisation);
+                               $orgEmployeeContrat->setDateDebut($dateDebutContrat);
+                               $orgEmployeeContrat->setDateFin($dateFinContrat);
+                               
+                               $entityManager->persist($orgEmployeeContrat);
+                           }
+                       }
+                   }
+               }
+               
+               // Créer le contrat secondaire si les données sont fournies
+               $natureContratId2 = $form->get('natureContrat2')->getData();
+               $dateDebutContrat2 = $form->get('dateDebutContrat2')->getData();
+               $dateFinContrat2 = $form->get('dateFinContrat2')->getData();
+               
+               if ($natureContratId2 && $dateDebutContrat2) {
+                   $natureContrat2 = $natureContratRepository->find($natureContratId2);
+                   
+                   if ($natureContrat2) {
+                       $contrat2 = new EmployeeContrat();
+                       $contrat2->setEmploye($employee);
+                       $contrat2->setNatureContrat($natureContrat2->getDesignation());
+                       $contrat2->setDateDebut($dateDebutContrat2);
+                       $contrat2->setDateFin($dateFinContrat2);
+                       $contrat2->setStatut('actif');
+                       
+                       $entityManager->persist($contrat2);
+                       
+                       // Assigner à l'organisation secondaire si sélectionnée
+                       $organisationId2 = $form->get('organisation2')->getData();
+                       if ($organisationId2) {
+                           $organisation2 = $organisationRepository->find($organisationId2);
+                           
+                           if ($organisation2) {
+                               $orgEmployeeContrat2 = new OrganisationEmployeeContrat();
+                               $orgEmployeeContrat2->setEmployeeContrat($contrat2);
+                               $orgEmployeeContrat2->setOrganisation($organisation2);
+                               $orgEmployeeContrat2->setDateDebut($dateDebutContrat2);
+                               $orgEmployeeContrat2->setDateFin($dateFinContrat2);
+                               
+                               $entityManager->persist($orgEmployeeContrat2);
+                           }
+                       }
+                   }
+               }
+               
+               $entityManager->flush();
 
             $this->addFlash('success', 'Employé ajouté avec succès !');
             return $this->redirectToRoute('responsable_manage_employes');
@@ -367,7 +445,7 @@ class ResponsableRhController extends AbstractController
 
         $response = $this->render('responsable-rh/dossier_documents.html.twig', [
             'dossier' => $dossier,
-            'documents' => $dossier->getDocuments()
+            'documents' => [] // Les documents ne sont plus liés aux dossiers
         ]);
         
         $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
@@ -399,7 +477,7 @@ class ResponsableRhController extends AbstractController
     }
 
     #[Route('/documents/ajouter', name: 'responsable_add_document')]
-    public function addDocument(Request $request, EntityManagerInterface $entityManager, DossierRepository $dossierRepository): Response
+    public function addDocument(Request $request, EntityManagerInterface $entityManager, DossierRepository $dossierRepository, NatureContratTypeDocumentRepository $matrixRepository, NatureContratRepository $natureContratRepository): Response
     {
         if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
             return $this->redirectToRoute('app_login');
@@ -407,18 +485,17 @@ class ResponsableRhController extends AbstractController
 
         $document = new Document();
         
-        // Si un dossier_id est fourni, pré-sélectionner le dossier
-        $dossierId = $request->query->get('dossier_id');
-        if ($dossierId) {
-            $dossier = $dossierRepository->find($dossierId);
-            if ($dossier) {
-                $document->setDossier($dossier);
-            }
+        // Récupérer les données de la matrice pour l'affichage
+        $matrixData = $matrixRepository->findAll();
+        $natureContrats = $natureContratRepository->findAll();
+        
+        // Préparer la matrice pour l'affichage
+        $displayMatrix = [];
+        foreach ($matrixData as $item) {
+            $displayMatrix[$item->getDocumentAbbreviation()][$item->getContractType()] = $item->isRequired();
         }
         
-        $form = $this->createForm(DocumentType::class, $document, [
-            'is_new' => true
-        ]);
+        $form = $this->createForm(DocumentType::class, $document);
 
         $form->handleRequest($request);
 
@@ -504,7 +581,9 @@ class ResponsableRhController extends AbstractController
         }
 
         $response = $this->render('responsable-rh/add_document.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'matrixData' => $displayMatrix,
+            'natureContrats' => $natureContrats
         ]);
         
         $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
@@ -527,9 +606,7 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('responsable_manage_documents');
         }
 
-        $form = $this->createForm(DocumentType::class, $document, [
-            'is_new' => false
-        ]);
+        $form = $this->createForm(DocumentType::class, $document);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -919,15 +996,6 @@ class ResponsableRhController extends AbstractController
         ]);
     }
 
-    #[Route('/nature-contrats', name: 'responsable_manage_nature_contrats')]
-    public function manageNatureContrats(NatureContratRepository $natureContratRepository): Response
-    {
-        $natureContrats = $natureContratRepository->findAll();
-        
-        return $this->render('responsable-rh/nature_contrats.html.twig', [
-            'natureContrats' => $natureContrats,
-        ]);
-    }
 
     #[Route('/organisations', name: 'responsable_manage_organisations')]
     public function manageOrganisations(OrganisationRepository $organisationRepository): Response
@@ -936,6 +1004,87 @@ class ResponsableRhController extends AbstractController
         
         return $this->render('responsable-rh/organisations.html.twig', [
             'organisations' => $organisations,
+        ]);
+    }
+
+    #[Route('/organisations/{id}', name: 'responsable_view_organisation', requirements: ['id' => '\d+'])]
+    public function viewOrganisation(int $id, OrganisationRepository $organisationRepository): Response
+    {
+        $organisation = $organisationRepository->find($id);
+        
+        if (!$organisation) {
+            $this->addFlash('error', 'Organisation non trouvée !');
+            return $this->redirectToRoute('responsable_manage_organisations');
+        }
+        
+        return $this->render('responsable-rh/organisation_details.html.twig', [
+            'organisation' => $organisation,
+        ]);
+    }
+
+    #[Route('/organisations/{id}/edit', name: 'responsable_edit_organisation', requirements: ['id' => '\d+'])]
+    public function editOrganisation(int $id, Request $request, OrganisationRepository $organisationRepository, EntityManagerInterface $entityManager): Response
+    {
+        $organisation = $organisationRepository->find($id);
+        
+        if (!$organisation) {
+            $this->addFlash('error', 'Organisation non trouvée !');
+            return $this->redirectToRoute('responsable_manage_organisations');
+        }
+        
+        $form = $this->createForm(OrganisationType::class, $organisation);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Organisation mise à jour avec succès !');
+            return $this->redirectToRoute('responsable_view_organisation', ['id' => $organisation->getId()]);
+        }
+        
+        return $this->render('responsable-rh/edit_organisation.html.twig', [
+            'organisation' => $organisation,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/organisations/new', name: 'responsable_add_organisation')]
+    public function addOrganisation(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $organisation = new Organisation();
+        $form = $this->createForm(OrganisationType::class, $organisation);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($organisation);
+            $entityManager->flush();
+            $this->addFlash('success', 'Organisation créée avec succès !');
+            return $this->redirectToRoute('responsable_view_organisation', ['id' => $organisation->getId()]);
+        }
+        
+        return $this->render('responsable-rh/add_organisation.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/organisations/assign', name: 'responsable_assign_organisation')]
+    public function assignOrganisation(Request $request, EntityManagerInterface $entityManager, OrganisationRepository $organisationRepository, EmployeeContratRepository $employeeContratRepository): Response
+    {
+        $organisationEmployeeContrat = new \App\Entity\OrganisationEmployeeContrat();
+        $form = $this->createForm(OrganisationEmployeeContratType::class, $organisationEmployeeContrat, [
+            'organisationRepository' => $organisationRepository,
+            'employeeContratRepository' => $employeeContratRepository,
+        ]);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($organisationEmployeeContrat);
+            $entityManager->flush();
+            $this->addFlash('success', 'Employé assigné à l\'organisation avec succès !');
+            return $this->redirectToRoute('responsable_manage_organisations');
+        }
+        
+        return $this->render('responsable-rh/assign_organisation.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

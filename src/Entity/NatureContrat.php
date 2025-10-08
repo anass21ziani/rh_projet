@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NatureContratRepository::class)]
+#[ORM\Table(name: 'p_nature_contrat')]
 class NatureContrat
 {
     #[ORM\Id]
@@ -24,13 +25,9 @@ class NatureContrat
     #[ORM\OneToMany(targetEntity: EmployeeContrat::class, mappedBy: 'natureContrat')]
     private Collection $employeeContrats;
 
-    #[ORM\OneToMany(targetEntity: NatureContratTypeDocument::class, mappedBy: 'natureContrat', cascade: ['persist', 'remove'])]
-    private Collection $natureContratTypeDocuments;
-
     public function __construct()
     {
         $this->employeeContrats = new ArrayCollection();
-        $this->natureContratTypeDocuments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,35 +89,6 @@ class NatureContrat
         return $this;
     }
 
-    /**
-     * @return Collection<int, NatureContratTypeDocument>
-     */
-    public function getNatureContratTypeDocuments(): Collection
-    {
-        return $this->natureContratTypeDocuments;
-    }
-
-    public function addNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
-    {
-        if (!$this->natureContratTypeDocuments->contains($natureContratTypeDocument)) {
-            $this->natureContratTypeDocuments->add($natureContratTypeDocument);
-            $natureContratTypeDocument->setNatureContrat($this);
-        }
-
-        return $this;
-    }
-
-    public function removeNatureContratTypeDocument(NatureContratTypeDocument $natureContratTypeDocument): static
-    {
-        if ($this->natureContratTypeDocuments->removeElement($natureContratTypeDocument)) {
-            // set the owning side to null (unless already changed)
-            if ($natureContratTypeDocument->getNatureContrat() === $this) {
-                $natureContratTypeDocument->setNatureContrat(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function __toString(): string
     {

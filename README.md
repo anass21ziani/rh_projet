@@ -2,47 +2,33 @@
 
 ## 📋 Description
 
-Ce projet est un système complet de gestion documentaire pour les ressources humaines, développé avec Symfony 7.3. Il implémente une architecture basée sur les rôles avec gestion hiérarchique des employés, contrats, dossiers et documents.
+Ce projet est un système complet de gestion documentaire pour les ressources humaines, développé avec Symfony 7.3. Il implémente une architecture basée sur les rôles avec gestion hiérarchique des employés, contrats multiples, organisations, dossiers et documents. Le système inclut une matrice documentaire avancée pour la conformité légale.
 
 ## 🏗️ Architecture
 
 ### Structure de Base de Données
 
-Le système utilise une structure hiérarchique : **Employés → Contrats → Dossiers → Placards → Documents**
+Le système utilise une structure normalisée avec préfixes `p_` (paramétrage) et `t_` (traitement) :
 
-#### Tables Principales
+#### Tables de Paramétrage (p_)
+- **`p_document`** - Référentiel documentaire RH
+- **`p_nature_contrat`** - Types de contrats normalisés
+- **`p_nature_contrat_type_document`** - Matrice des obligations documentaires
+- **`p_placards`** - Emplacements de stockage
+- **`p_organisation`** - Structure organisationnelle
 
-1. **`employees`** - Table des employés
-   - Informations personnelles et professionnelles
-   - Authentification et rôles
-   - Relations avec contrats et dossiers
-
-2. **`nature_contrat`** - Types de contrats
-   - CDI, CDD, Stage, etc.
-   - Catalogue normalisé des types
-
-3. **`employee_contrat`** - Contrats des employés
-   - Liaison employé-contrat
-   - Gestion temporelle et statuts
-   - Historique des contrats
-
-4. **`dossiers`** - Dossiers RH
-   - Organisation par catégories
-   - Types : administratif, médical, juridique, etc.
-
-5. **`placards`** - Emplacements de stockage
-   - Gestion physique/virtuelle
-   - Localisation des dossiers
-
-6. **`documents`** - Documents finaux
-   - Stockage des fichiers
-   - Métadonnées et traçabilité
+#### Tables de Traitement (t_)
+- **`t_employe`** - Table des employés
+- **`t_employee_contrat`** - Contrats des employés (support multi-contrats)
+- **`t_organisation_employee_contrat`** - Assignations organisationnelles
+- **`t_dossier`** - Dossiers RH des employés
+- **`t_demandes`** - Demandes et réclamations
 
 ### Système de Rôles
 
 - **`ROLE_ADMINISTRATEUR_RH`** - Contrôle total du système
-- **`ROLE_RESPONSABLE_RH`** - Gestion opérationnelle
-- **`ROLE_EMPLOYEE`** - Accès limité
+- **`ROLE_RESPONSABLE_RH`** - Gestion opérationnelle et matrice documentaire
+- **`ROLE_EMPLOYEE`** - Accès personnel limité
 
 ## 🚀 Installation
 
@@ -103,14 +89,19 @@ src/
 ├── Controller/          # Contrôleurs métier
 │   ├── AdministrateurRhController.php
 │   ├── ResponsableRhController.php
+│   ├── NatureContratTypeDocumentController.php
 │   └── SecurityController.php
 ├── Entity/             # Entités Doctrine
-│   ├── Employee.php
-│   ├── NatureContrat.php
+│   ├── Employe.php
 │   ├── EmployeeContrat.php
+│   ├── Organisation.php
+│   ├── OrganisationEmployeeContrat.php
+│   ├── NatureContrat.php
+│   ├── NatureContratTypeDocument.php
+│   ├── Document.php
 │   ├── Dossier.php
 │   ├── Placard.php
-│   └── Document.php
+│   └── Demande.php
 ├── Form/               # Formulaires Symfony
 ├── Repository/         # Repositories de données
 ├── Security/           # Configuration sécurité
@@ -119,87 +110,153 @@ src/
 templates/              # Templates Twig
 ├── administrateur-rh/  # Interface administrateur
 ├── responsable-rh/     # Interface responsable
-├── security/           # Pages d'authentification
-└── base.html.twig      # Template de base
+├── employee/           # Interface employé
+├── dashboard/          # Dashboard unifié
+└── base_sidebar.html.twig  # Template avec sidebar
 ```
 
 ## 🔧 Fonctionnalités
 
 ### Pour l'Administrateur RH
 - ✅ Gestion complète des responsables RH
-- ✅ Gestion des employés
-- ✅ Configuration des types de contrats
-- ✅ Gestion des dossiers
 - ✅ Vue d'ensemble du système
+- ✅ Configuration des accès
 
 ### Pour le Responsable RH
-- ✅ Gestion des employés
-- ✅ Gestion des contrats
-- ✅ Gestion des dossiers
-- ✅ Upload et gestion des documents
-- ✅ Interface opérationnelle
+- ✅ **Gestion des employés** avec contrats multiples
+- ✅ **Organisations** - Structure organisationnelle complète
+- ✅ **Matrice Documentaire** - Obligations par type de contrat
+- ✅ **Gestion des dossiers** et documents
+- ✅ **Dashboard** avec statistiques avancées
+- ✅ **Assignations** employés-organisations
+- ✅ **Interface opérationnelle** complète
 
-### Fonctionnalités Générales
-- ✅ Authentification sécurisée
-- ✅ Gestion des rôles et permissions
-- ✅ Interface responsive
-- ✅ Upload de documents
-- ✅ Recherche et filtrage
-- ✅ Historique et traçabilité
+### Pour l'Employé
+- ✅ **Dashboard personnel** avec KPIs individuels
+- ✅ **Mon profil** - Informations personnelles
+- ✅ **Mes contrats** - Historique des contrats
+- ✅ **Mes dossiers** - Documents personnels
+- ✅ **Mes demandes** - Suivi des réclamations
+
+### Fonctionnalités Avancées
+- ✅ **Contrats Multiples** - Un employé peut avoir plusieurs contrats
+- ✅ **Organisations Multiples** - Assignation à différentes organisations
+- ✅ **Matrice Documentaire** - Conformité légale automatisée
+- ✅ **Dashboard Unifié** - Contenu adaptatif selon le rôle
+- ✅ **Interface Responsive** - Sidebar moderne
+- ✅ **Authentification sécurisée** avec gestion des rôles
+- ✅ **Upload de documents** avec validation
+- ✅ **Recherche et filtrage** avancés
+- ✅ **Historique et traçabilité** complète
+
+## 🏢 Gestion des Organisations
+
+### Structure Organisationnelle
+- **Division d'Activités Stratégiques (DAS)**
+- **Groupements**
+- **Dossiers** avec désignations
+- **Assignations** employés-organisations avec dates
+
+### Contrats Multiples
+- **Contrat Principal** : Obligatoire lors de la création
+- **Contrat Secondaire** : Optionnel, nature différente possible
+- **Organisations différentes** pour chaque contrat
+- **Gestion temporelle** indépendante
+
+## 📊 Matrice Documentaire
+
+### Obligations Légales
+- **Documents obligatoires** par type de contrat
+- **Documents optionnels** selon la nature
+- **Conformité automatisée** avec alertes
+- **Statistiques** de conformité
+
+### Types de Documents Supportés
+- CIN, CV, Diplôme, Contrat
+- Bulletins de paie, Certificats médicaux
+- RIB, Photo d'identité
+- Attestations de travail, Lettres de motivation
 
 ## 🛠️ Technologies Utilisées
 
 - **Backend** : Symfony 7.3, PHP 8.2+
 - **Base de données** : PostgreSQL 16
 - **ORM** : Doctrine 3.5
-- **Frontend** : Twig, Bootstrap 5, JavaScript
+- **Frontend** : Twig, Bootstrap 5, Chart.js
 - **Conteneurisation** : Docker Compose
 - **Sécurité** : Symfony Security Bundle
 
 ## 📊 Cas d'Usage
 
-### Recrutement
-1. Créer un employé
-2. Créer un contrat
-3. Créer un dossier administratif
-4. Uploader les documents
+### Recrutement Avancé
+1. Créer un employé avec informations complètes
+2. Créer un contrat principal avec organisation
+3. Optionnellement créer un contrat secondaire
+4. Assigner aux organisations appropriées
+5. Créer un dossier administratif
+6. Vérifier la conformité documentaire via la matrice
 
-### Gestion Documentaire
-1. Organiser par types de dossiers
-2. Assigner des placards
-3. Uploader et référencer les documents
-4. Traçabilité complète
+### Gestion Organisationnelle
+1. Configurer la structure organisationnelle
+2. Assigner les employés aux organisations
+3. Gérer les contrats multiples
+4. Suivre les évolutions organisationnelles
 
-### Audit
-- Historique des contrats
-- Traçabilité des documents
-- Logs d'activité
+### Conformité Documentaire
+1. Consulter la matrice des obligations
+2. Identifier les documents manquants
+3. Uploader les documents requis
+4. Vérifier la conformité par employé
+
+### Audit et Reporting
+- Historique des contrats multiples
+- Traçabilité des assignations organisationnelles
+- Statistiques de conformité documentaire
+- Logs d'activité complets
 
 ## 🔐 Sécurité
 
-- Authentification par formulaire
+- Authentification par formulaire sécurisé
 - Hachage automatique des mots de passe
-- Protection CSRF
-- Contrôle d'accès par rôles
-- Headers de sécurité
+- Protection CSRF sur tous les formulaires
+- Contrôle d'accès par rôles granulaires
+- Headers de sécurité automatiques
 - Protection contre la navigation arrière
+- Sessions sécurisées
 
 ## 📈 Évolutions Possibles
 
-- Versioning des documents
-- Workflow d'approbation
-- Recherche full-text
-- API REST
-- Notifications
-- Rapports et statistiques
-- Intégration avec d'autres systèmes
+- **Workflow d'approbation** pour les documents
+- **Versioning** des documents
+- **Notifications** automatiques
+- **API REST** pour intégrations
+- **Recherche full-text** avancée
+- **Rapports** personnalisés
+- **Intégration** avec d'autres systèmes RH
+- **Mobile app** pour les employés
+
+## 🎯 Fonctionnalités Récentes
+
+### ✅ Implémentées
+- **Support des contrats multiples** par employé
+- **Gestion des organisations** avec assignations
+- **Matrice documentaire** interactive
+- **Dashboard unifié** adaptatif
+- **Interface sidebar** moderne
+- **Conformité documentaire** automatisée
+
+### 🔄 Améliorations Continues
+- Interface utilisateur optimisée
+- Performance des requêtes
+- Expérience utilisateur
+- Sécurité renforcée
 
 ## 🤝 Contribution
 
 1. Fork le projet
-2. Créer une branche feature
-3. Commit les changements
-4. Push vers la branche
+2. Créer une branche feature (`git checkout -b feature/nouvelle-fonctionnalite`)
+3. Commit les changements (`git commit -am 'Ajouter nouvelle fonctionnalité'`)
+4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalite`)
 5. Ouvrir une Pull Request
 
 ## 📄 Licence
@@ -212,4 +269,6 @@ Pour toute question ou support, contactez l'équipe de développement.
 
 ---
 
-**Développé avec ❤️ pour la gestion des ressources humaines**
+**Développé avec ❤️ pour la gestion moderne des ressources humaines**
+
+*Système RH complet avec gestion des organisations, contrats multiples et conformité documentaire automatisée.*

@@ -7,7 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DemandeRepository::class)]
-#[ORM\Table(name: '`demandes`')]
+#[ORM\Table(name: 't_demandes')]
 class Demande
 {
     #[ORM\Id]
@@ -33,7 +33,7 @@ class Demande
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $dateReponse = null;
 
-    #[ORM\ManyToOne(targetEntity: Employe::class)]
+    #[ORM\ManyToOne(targetEntity: Employe::class, inversedBy: 'demandes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Employe $employe = null;
 

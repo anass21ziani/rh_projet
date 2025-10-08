@@ -36,20 +36,17 @@ class DocumentRepository extends ServiceEntityRepository
 
     public function findByDossier(int $dossierId): array
     {
-        return $this->createQueryBuilder('d')
-            ->andWhere('d.dossier = :dossierId')
-            ->setParameter('dossierId', $dossierId)
-            ->orderBy('d.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        // Note: Documents are no longer directly linked to dossiers
+        // This method returns an empty array since the relationship was removed
+        return [];
     }
 
     public function findByFileType(string $fileType): array
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.fileType = :fileType')
+            ->andWhere('d.typeDocument = :fileType')
             ->setParameter('fileType', $fileType)
-            ->orderBy('d.createdAt', 'DESC')
+            ->orderBy('d.id', 'DESC')
             ->getQuery()
             ->getResult();
     }
@@ -57,7 +54,7 @@ class DocumentRepository extends ServiceEntityRepository
     public function findByReference(string $reference): ?Document
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.reference = :reference')
+            ->andWhere('d.abbreviation = :reference')
             ->setParameter('reference', $reference)
             ->getQuery()
             ->getOneOrNullResult();
@@ -66,7 +63,7 @@ class DocumentRepository extends ServiceEntityRepository
     public function findRecentDocuments(int $limit = 10): array
     {
         return $this->createQueryBuilder('d')
-            ->orderBy('d.createdAt', 'DESC')
+            ->orderBy('d.id', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -75,9 +72,9 @@ class DocumentRepository extends ServiceEntityRepository
     public function searchByFilename(string $searchTerm): array
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.filename LIKE :searchTerm')
+            ->andWhere('d.libelleComplet LIKE :searchTerm')
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
-            ->orderBy('d.filename', 'ASC')
+            ->orderBy('d.libelleComplet', 'ASC')
             ->getQuery()
             ->getResult();
     }

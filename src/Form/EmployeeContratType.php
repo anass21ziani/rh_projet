@@ -18,7 +18,7 @@ class EmployeeContratType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('employee', EntityType::class, [
+            ->add('employe', EntityType::class, [
                 'label' => 'Employé',
                 'class' => Employe::class,
                 'choice_label' => 'fullName',
@@ -34,14 +34,14 @@ class EmployeeContratType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
-            ->add('startDate', DateType::class, [
+            ->add('dateDebut', DateType::class, [
                 'label' => 'Date de début',
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control'
                 ]
             ])
-            ->add('endDate', DateType::class, [
+            ->add('dateFin', DateType::class, [
                 'label' => 'Date de fin',
                 'required' => false,
                 'widget' => 'single_text',

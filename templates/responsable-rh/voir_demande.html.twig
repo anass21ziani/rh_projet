@@ -22,7 +22,13 @@
                             <p class="text-muted">
                                 <strong>{{ demande.employe.prenom }} {{ demande.employe.nom }}</strong><br>
                                 {{ demande.employe.email }}<br>
-                                {% if demande.employe.department %}{{ demande.employe.department }}{% endif %}
+                                {% if demande.employe.employeeContrats is not empty %}
+                                    {% set currentContrat = demande.employe.employeeContrats|first %}
+                                    {% if currentContrat.organisationEmployeeContrats is not empty %}
+                                        {% set currentOrg = currentContrat.organisationEmployeeContrats|first.organisation %}
+                                        {{ currentOrg.nom }}
+                                    {% endif %}
+                                {% endif %}
                             </p>
                         </div>
                         <div class="col-md-6">

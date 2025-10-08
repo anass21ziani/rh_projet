@@ -103,9 +103,7 @@ class AdministrateurRhController extends AbstractController
         }
 
         $employee = new Employe();
-        $form = $this->createForm(EmployeeType::class, $employee, [
-            'is_new' => true // Nouvel utilisateur
-        ]);
+        $form = $this->createForm(EmployeeType::class, $employee);
 
         $form->handleRequest($request);
 
@@ -155,9 +153,7 @@ class AdministrateurRhController extends AbstractController
             return $this->redirectToRoute('admin_manage_responsables');
         }
 
-        $form = $this->createForm(EmployeeType::class, $employee, [
-            'is_new' => false // Modification d'utilisateur existant
-        ]);
+        $form = $this->createForm(EmployeeType::class, $employee);
 
         $form->handleRequest($request);
 

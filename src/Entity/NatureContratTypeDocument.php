@@ -6,6 +6,7 @@ use App\Repository\NatureContratTypeDocumentRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NatureContratTypeDocumentRepository::class)]
+#[ORM\Table(name: 'p_nature_contrat_type_document')]
 class NatureContratTypeDocument
 {
     #[ORM\Id]
@@ -13,54 +14,52 @@ class NatureContratTypeDocument
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'natureContratTypeDocuments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?NatureContrat $natureContrat = null;
+    #[ORM\Column(length: 10)]
+    private ?string $documentAbbreviation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'natureContratTypeDocuments')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Document $document = null;
+    #[ORM\Column(length: 100)]
+    private ?string $contractType = null;
 
     #[ORM\Column]
-    private ?bool $obligatoire = null;
+    private ?bool $required = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNatureContrat(): ?NatureContrat
+    public function getDocumentAbbreviation(): ?string
     {
-        return $this->natureContrat;
+        return $this->documentAbbreviation;
     }
 
-    public function setNatureContrat(?NatureContrat $natureContrat): static
+    public function setDocumentAbbreviation(string $documentAbbreviation): static
     {
-        $this->natureContrat = $natureContrat;
+        $this->documentAbbreviation = $documentAbbreviation;
 
         return $this;
     }
 
-    public function getDocument(): ?Document
+    public function getContractType(): ?string
     {
-        return $this->document;
+        return $this->contractType;
     }
 
-    public function setDocument(?Document $document): static
+    public function setContractType(string $contractType): static
     {
-        $this->document = $document;
+        $this->contractType = $contractType;
 
         return $this;
     }
 
-    public function isObligatoire(): ?bool
+    public function isRequired(): ?bool
     {
-        return $this->obligatoire;
+        return $this->required;
     }
 
-    public function setObligatoire(bool $obligatoire): static
+    public function setRequired(bool $required): static
     {
-        $this->obligatoire = $obligatoire;
+        $this->required = $required;
 
         return $this;
     }

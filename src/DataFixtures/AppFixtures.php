@@ -9,7 +9,6 @@ use App\Entity\Dossier;
 use App\Entity\Placard;
 use App\Entity\Document;
 use App\Entity\Demande;
-use App\Entity\TypeDocument;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -41,27 +40,7 @@ class AppFixtures extends Fixture
         $stage->setDesignation('Période de stage');
         $manager->persist($stage);
 
-        // Créer les types de documents
-        $typesDocuments = [
-            ['nom' => 'Contrat de travail', 'description' => 'Contrat d\'embauche', 'obligatoire' => true],
-            ['nom' => 'Fiche de paie', 'description' => 'Bulletin de salaire mensuel', 'obligatoire' => true],
-            ['nom' => 'Attestation de travail', 'description' => 'Certificat d\'emploi', 'obligatoire' => false],
-            ['nom' => 'CV', 'description' => 'Curriculum vitae', 'obligatoire' => true],
-            ['nom' => 'Lettre de motivation', 'description' => 'Lettre de candidature', 'obligatoire' => false],
-            ['nom' => 'Diplôme', 'description' => 'Certificat de formation', 'obligatoire' => true],
-            ['nom' => 'Carte d\'identité', 'description' => 'Pièce d\'identité', 'obligatoire' => true],
-            ['nom' => 'Photo d\'identité', 'description' => 'Photo de profil', 'obligatoire' => true],
-            ['nom' => 'Certificat médical', 'description' => 'Visite médicale d\'embauche', 'obligatoire' => true],
-            ['nom' => 'Relevé d\'identité bancaire', 'description' => 'RIB pour les virements', 'obligatoire' => true],
-        ];
-
-        foreach ($typesDocuments as $typeData) {
-            $typeDocument = new TypeDocument();
-            $typeDocument->setNom($typeData['nom']);
-            $typeDocument->setDescription($typeData['description']);
-            $typeDocument->setObligatoire($typeData['obligatoire']);
-            $manager->persist($typeDocument);
-        }
+        // Les documents sont maintenant gérés par DocumentFixtures
 
         // Créer les utilisateurs
         $administrateurRh = new Employe();
@@ -119,21 +98,7 @@ class AppFixtures extends Fixture
         // Associer le dossier au placard
         $dossier->setPlacard($placard);
 
-        // Créer un document exemple
-        $document = new Document();
-        $document->setAbreviation('CTR');
-        $document->setLibelleComplet('Contrat de travail');
-        $document->setTypeDocument('RH');
-        $document->setUsage('Document juridique liant l\'employé');
-        $document->setDossier($dossier);
-        $document->setReference('DOC-2025-001');
-        $document->setFilename('contrat_emploi.pdf');
-        $document->setFileType('application/pdf');
-        $document->setFilePath('/documents/contrat_emploi.pdf');
-        $document->setUploadedBy('admin@uiass.rh');
-        $document->setCreatedAt(new \DateTimeImmutable());
-        $document->setObligatoire(true);
-        $manager->persist($document);
+        // Les documents sont maintenant gérés par DocumentFixtures
 
         // Créer des demandes de test
         $demande1 = new Demande();

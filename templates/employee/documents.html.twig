@@ -34,13 +34,12 @@
                             <tbody>
                                 {% for document in documents %}
                                 <tr>
-                                    <td>{{ document.reference }}</td>
-                                    <td>{{ document.filename }}</td>
+                                    <td>{{ document.abbreviation }}</td>
+                                    <td>{{ document.libelleComplet }}</td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ document.fileType|upper }}</span>
+                                        <span class="badge bg-secondary">{{ document.typeDocument }}</span>
                                     </td>
-                                    <td>{{ document.dossier.nom }}</td>
-                                    <td>{{ document.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>{{ document.usage }}</td>
                                     <td>
                                         <a href="{{ path('employee_download_document', {'id': document.id}) }}" class="btn btn-sm btn-info">
                                             <i class="fas fa-download"></i> Télécharger

@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: EmployeRepository::class)]
-#[ORM\Table(name: '`employe`')]
+#[ORM\Table(name: 't_employe')]
 class Employe implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -39,8 +39,6 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
-    #[ORM\Column(length: 100, nullable: true)]
-    private ?string $department = null;
 
     #[ORM\OneToMany(targetEntity: EmployeeContrat::class, mappedBy: 'employe', cascade: ['persist', 'remove'])]
     private Collection $employeeContrats;
@@ -176,17 +174,6 @@ class Employe implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getDepartment(): ?string
-    {
-        return $this->department;
-    }
-
-    public function setDepartment(?string $department): static
-    {
-        $this->department = $department;
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, EmployeeContrat>

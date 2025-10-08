@@ -1,0 +1,248 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Organisations{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-sitemap me-2"></i>
+                        Gestion des Organisations
+                    </h1>
+                    <p class="text-muted mb-0">Structure organisationnelle de l'entreprise</p>
+                </div>
+                <div>
+                    <a href="{{ path('responsable_assign_organisation') }}" class="btn btn-info me-2">
+                        <i class="fas fa-user-plus me-2"></i>Assigner Employé
+                    </a>
+                    <a href="{{ path('responsable_add_organisation') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Nouvelle Organisation
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Organisations
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ organisations|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        DAS Uniques
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% set das_unique = [] %}
+                                        {% for org in organisations %}
+                                            {% if org.das not in das_unique %}
+                                                {% set das_unique = das_unique|merge([org.das]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ das_unique|length }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-layer-group fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Groupements
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% set groupements_unique = [] %}
+                                        {% for org in organisations %}
+                                            {% if org.groupement not in groupements_unique %}
+                                                {% set groupements_unique = groupements_unique|merge([org.groupement]) %}
+                                            {% endif %}
+                                        {% endfor %}
+                                        {{ groupements_unique|length }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Employés Assignés
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% set total_employees = 0 %}
+                                        {% for org in organisations %}
+                                            {% set total_employees = total_employees + org.organisationEmployeeContrats|length %}
+                                        {% endfor %}
+                                        {{ total_employees }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Organisations Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-table me-2"></i>
+                        Liste des Organisations
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if organisations is empty %}
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Aucune organisation trouvée.
+                        </div>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>DAS</th>
+                                        <th>Division</th>
+                                        <th>Groupement</th>
+                                        <th>Dossier</th>
+                                        <th>Désignation</th>
+                                        <th class="text-center">Employés</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for organisation in organisations %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary">{{ organisation.code }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ organisation.das }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ organisation.divisionActivitesStrategiques }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ organisation.groupement }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-warning">{{ organisation.dossier }}</span>
+                                            </td>
+                                            <td>
+                                                <strong>{{ organisation.dossierDesignation }}</strong>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-success">
+                                                    {{ organisation.organisationEmployeeContrats|length }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group" role="group">
+                                                    <a href="{{ path('responsable_view_organisation', {'id': organisation.id}) }}" 
+                                                       class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye me-1"></i>Voir
+                                                    </a>
+                                                    <a href="{{ path('responsable_edit_organisation', {'id': organisation.id}) }}" 
+                                                       class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-edit me-1"></i>Modifier
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Hierarchical View -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-project-diagram me-2"></i>
+                                Vue Hiérarchique
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if organisations is not empty %}
+                                <div class="tree">
+                                    {% set das_groups = {} %}
+                                    {% for org in organisations %}
+                                        {% set das_groups = das_groups|merge({(org.das): das_groups[org.das]|default([])|merge([org])}) %}
+                                    {% endfor %}
+                                    
+                                    {% for das, orgs in das_groups %}
+                                        <div class="mb-3">
+                                            <h6 class="text-primary">
+                                                <i class="fas fa-layer-group me-2"></i>
+                                                DAS {{ das }}
+                                            </h6>
+                                            <div class="ml-4">
+                                                {% for org in orgs %}
+                                                    <div class="mb-2">
+                                                        <span class="badge bg-info me-2">{{ org.code }}</span>
+                                                        <strong>{{ org.dossierDesignation }}</strong>
+                                                        <small class="text-muted">
+                                                            ({{ org.organisationEmployeeContrats|length }} employé{{ org.organisationEmployeeContrats|length > 1 ? 's' : '' }})
+                                                        </small>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info text-center">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Aucune organisation à afficher.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

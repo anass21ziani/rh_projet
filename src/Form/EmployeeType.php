@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Employe;
 use App\Entity\NatureContrat;
+use App\Entity\Organisation;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -49,21 +50,6 @@ class EmployeeType extends AbstractType
                     'placeholder' => '+212 6XX XXX XXX'
                 ]
             ])
-            ->add('department', ChoiceType::class, [
-                'label' => 'Département',
-                'choices' => [
-                    'Ressources Humaines' => 'RH',
-                    'Informatique' => 'IT',
-                    'Finance' => 'Finance',
-                    'Marketing' => 'Marketing',
-                    'Ventes' => 'Ventes',
-                    'Production' => 'Production',
-                    'Administration' => 'Administration'
-                ],
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
             ->add('password', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'required' => $options['is_new'] ?? true,
@@ -83,6 +69,17 @@ class EmployeeType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
+            ->add('organisation', EntityType::class, [
+                'class' => Organisation::class,
+                'choice_label' => 'dossierDesignation',
+                'label' => 'Organisation',
+                'mapped' => false,
+                'required' => false,
+                'placeholder' => 'Sélectionner une organisation...',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('dateDebutContrat', DateType::class, [
                 'label' => 'Date de début du contrat',
                 'widget' => 'single_text',
@@ -97,6 +94,48 @@ class EmployeeType extends AbstractType
                 'widget' => 'single_text',
                 'required' => false,
                 'mapped' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            
+            // Section Deuxième Contrat (optionnel)
+            ->add('natureContrat2', EntityType::class, [
+                'class' => NatureContrat::class,
+                'choice_label' => 'designation',
+                'label' => 'Type de contrat (Secondaire)',
+                'mapped' => false,
+                'required' => false,
+                'placeholder' => 'Sélectionner un deuxième contrat...',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('organisation2', EntityType::class, [
+                'class' => Organisation::class,
+                'choice_label' => 'dossierDesignation',
+                'label' => 'Organisation (Secondaire)',
+                'mapped' => false,
+                'required' => false,
+                'placeholder' => 'Sélectionner une deuxième organisation...',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('dateDebutContrat2', DateType::class, [
+                'label' => 'Date de début du contrat (Secondaire)',
+                'widget' => 'single_text',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('dateFinContrat2', DateType::class, [
+                'label' => 'Date de fin du contrat (Secondaire)',
+                'widget' => 'single_text',
+                'mapped' => false,
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control'
                 ]

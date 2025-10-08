@@ -218,6 +218,12 @@
                                     <span>Placards</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ path('responsable_manage_organisations') }}" class="{% if 'responsable_manage_organisations' in app.request.get('_route') %}active{% endif %}">
+                                    <i class="fas fa-sitemap"></i>
+                                    <span>Organisations</span>
+                                </a>
+                            </li>
                         {% endif %}
                         {% if 'ROLE_EMPLOYEE' in app.user.roles %}
                             <li>

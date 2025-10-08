@@ -71,7 +71,7 @@ class EmployeRepository extends ServiceEntityRepository implements PasswordUpgra
     public function findEmployeesByRole(string $role): array
     {
         // Utiliser une requête SQL native pour PostgreSQL
-        $sql = 'SELECT e.* FROM employe e WHERE e.roles::text LIKE :role ORDER BY e.nom ASC';
+        $sql = 'SELECT e.* FROM t_employe e WHERE e.roles::text LIKE :role ORDER BY e.nom ASC';
         
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $result = $stmt->executeQuery(['role' => '%' . $role . '%']);
@@ -86,18 +86,6 @@ class EmployeRepository extends ServiceEntityRepository implements PasswordUpgra
         return $employees;
     }
 
-    /**
-     * Trouve les employés par département
-     */
-    public function findByDepartment(string $department): array
-    {
-        return $this->createQueryBuilder('e')
-            ->andWhere('e.department = :department')
-            ->setParameter('department', $department)
-            ->orderBy('e.nom', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
 
     /**
      * Trouve les employés par rôle (alias pour findEmployeesByRole)
@@ -113,7 +101,7 @@ class EmployeRepository extends ServiceEntityRepository implements PasswordUpgra
     public function findActiveByRole(string $role): array
     {
         // Utiliser une requête SQL native pour PostgreSQL
-        $sql = 'SELECT e.* FROM employe e WHERE e.is_active = :active AND e.roles::text LIKE :role ORDER BY e.nom ASC';
+        $sql = 'SELECT e.* FROM t_employe e WHERE e.is_active = :active AND e.roles::text LIKE :role ORDER BY e.nom ASC';
         
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
         $result = $stmt->executeQuery([

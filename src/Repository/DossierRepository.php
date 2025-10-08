@@ -65,9 +65,8 @@ class DossierRepository extends ServiceEntityRepository
 
     public function findRecentDossiersWithDocuments(int $limit = 10): array
     {
+        // Méthode modifiée car la relation d.documents n'existe plus
         return $this->createQueryBuilder('d')
-            ->leftJoin('d.documents', 'doc')
-            ->addSelect('doc')
             ->orderBy('d.id', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()

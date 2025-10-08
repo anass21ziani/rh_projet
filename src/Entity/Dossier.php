@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DossierRepository::class)]
+#[ORM\Table(name: 't_dossier')]
 class Dossier
 {
     #[ORM\Id]
@@ -35,12 +36,10 @@ class Dossier
     #[ORM\Column(type: 'datetime')]
     private ?\DateTimeInterface $createdAt = null;
 
-    #[ORM\OneToMany(targetEntity: Document::class, mappedBy: 'dossier', cascade: ['persist', 'remove'])]
-    private Collection $documents;
+    // Relation avec Document supprimée car Document n'a plus de propriété dossier
 
     public function __construct()
     {
-        $this->documents = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
 
@@ -97,12 +96,12 @@ class Dossier
         return $this;
     }
 
-    public function getPlacard(): ?string
+    public function getPlacard(): ?Placard
     {
         return $this->placard;
     }
 
-    public function setPlacard(?string $placard): static
+    public function setPlacard(?Placard $placard): static
     {
         $this->placard = $placard;
 
@@ -121,40 +120,9 @@ class Dossier
         return $this;
     }
 
-    /**
-     * @return Collection<int, Document>
-     */
-    public function getDocuments(): Collection
-    {
-        return $this->documents;
-    }
+    // Méthodes liées aux documents supprimées car la relation n'existe plus
 
-    public function addDocument(Document $document): static
-    {
-        if (!$this->documents->contains($document)) {
-            $this->documents->add($document);
-            $document->setDossier($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDocument(Document $document): static
-    {
-        if ($this->documents->removeElement($document)) {
-            // set the owning side to null (unless already changed)
-            if ($document->getDossier() === $this) {
-                $document->setDossier(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getDocumentCount(): int
-    {
-        return $this->documents->count();
-    }
+    // Méthode getDocumentCount supprimée car la relation avec Document n'existe plus
 
     public function __toString(): string
     {

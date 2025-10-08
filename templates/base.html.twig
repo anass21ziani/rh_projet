@@ -204,6 +204,13 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ path('app_dashboard') }}">Accueil</a>
                         </li>
+                        {% if app.user and 'ROLE_RESPONSABLE_RH' in app.user.roles %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ path('responsable_manage_organisations') }}">
+                                    <i class="fas fa-sitemap me-1"></i>Organisations
+                                </a>
+                            </li>
+                        {% endif %}
                         {% if app.user %}
                             {% if 'ROLE_ADMINISTRATEUR_RH' in app.user.roles %}
                                 <li class="nav-item dropdown">
@@ -241,11 +248,11 @@
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_documents') }}">
                                             <i class="fas fa-file-alt me-2"></i>Documents
                                         </a></li>
-                                        <li><a class="dropdown-item" href="{{ path('responsable_manage_nature_contrats') }}">
-                                            <i class="fas fa-file-contract me-2"></i>Natures de Contrats
-                                        </a></li>
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_organisations') }}">
                                             <i class="fas fa-sitemap me-2"></i>Organisations
+                                        </a></li>
+                                        <li><a class="dropdown-item" href="{{ path('responsable_matrix_index') }}">
+                                            <i class="fas fa-table me-2"></i>Matrice Documentaire
                                         </a></li>
                                         <li><a class="dropdown-item" href="{{ path('responsable_manage_demandes') }}">
                                             <i class="fas fa-envelope me-2"></i>Demandes et Réclamations

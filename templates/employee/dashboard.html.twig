@@ -166,7 +166,13 @@
                         <i class="fas fa-user-circle fa-4x text-gray-300"></i>
                     </div>
                     <h5 class="font-weight-bold text-gray-800">{{ employee.prenom }} {{ employee.nom }}</h5>
-                    {% if employee.department %}<p class="text-muted mb-3">{{ employee.department }}</p>{% endif %}
+                    {% if employee.employeeContrats is not empty %}
+                        {% set currentContrat = employee.employeeContrats|first %}
+                        {% if currentContrat.organisationEmployeeContrats is not empty %}
+                            {% set currentOrg = currentContrat.organisationEmployeeContrats|first.organisation %}
+                            <p class="text-muted mb-3">{{ currentOrg.nom }}</p>
+                        {% endif %}
+                    {% endif %}
                     
                     <div class="row text-center">
                         <div class="col-12 mb-2">

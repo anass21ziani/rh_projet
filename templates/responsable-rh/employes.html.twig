@@ -51,7 +51,25 @@
                                     <td>{{ employe.nom }}</td>
                                     <td>{{ employe.prenom }}</td>
                                     <td>{{ employe.email }}</td>
-                                    <td>{{ employe.department }}</td>
+                                <td>
+                                    {% if employe.employeeContrats is not empty %}
+                                        {% set orgCount = 0 %}
+                                        {% for contrat in employe.employeeContrats %}
+                                            {% for orgContrat in contrat.organisationEmployeeContrats %}
+                                                {% if orgCount > 0 %}<br>{% endif %}
+                                                <span class="badge bg-{{ loop.parent.loop.first ? 'primary' : 'info' }}">
+                                                    {{ orgContrat.organisation.dossierDesignation }}
+                                                </span>
+                                                {% set orgCount = orgCount + 1 %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% if orgCount == 0 %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">Non assigné</span>
+                                    {% endif %}
+                                </td>
                                     <td>
                                         {% if employe.isActive %}
                                             <span class="badge bg-success">

@@ -18,6 +18,46 @@
         </div>
     </div>
 
+    <!-- Alertes de Conformité -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle fa-2x text-warning mb-2"></i>
+                    <h6 class="card-title">Documents Manquants</h6>
+                    <p class="card-text text-muted">Vérifiez la conformité des dossiers</p>
+                    <a href="{{ path('responsable_matrix_index') }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-table me-1"></i>Voir Matrice
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h6 class="card-title">Dossiers Conformes</h6>
+                    <p class="card-text text-muted">Documents à jour selon la matrice</p>
+                    <a href="{{ path('responsable_manage_dossiers') }}" class="btn btn-success btn-sm">
+                        <i class="fas fa-folder me-1"></i>Voir Dossiers
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-bar fa-2x text-info mb-2"></i>
+                    <h6 class="card-title">Statistiques</h6>
+                    <p class="card-text text-muted">Analyse de la conformité</p>
+                    <a href="{{ path('responsable_matrix_statistics') }}" class="btn btn-info btn-sm">
+                        <i class="fas fa-chart-line me-1"></i>Voir Stats
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -25,11 +65,17 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h5 class="card-title mb-0">Référentiel Documentaire RH</h5>
+                            <small class="text-muted">Base de données des types de documents utilisés dans l'organisation</small>
                         </div>
                         <div class="col-auto">
-                            <a href="{{ path('responsable_add_document') }}" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> Nouveau Document
-                            </a>
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('responsable_matrix_index') }}" class="btn btn-info">
+                                    <i class="fas fa-table"></i> Matrice
+                                </a>
+                                <a href="{{ path('responsable_add_document') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Nouveau Document
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,17 +96,13 @@
                                 {% for document in documents %}
                                 <tr>
                                     <td>
-                                        <span class="badge bg-primary">{{ document.abreviation }}</span>
+                                        <span class="badge bg-primary">{{ document.abbreviation }}</span>
                                     </td>
                                     <td>{{ document.libelleComplet }}</td>
                                     <td>{{ document.typeDocument }}</td>
                                     <td>{{ document.usage }}</td>
                                     <td>
-                                        {% if document.obligatoire %}
-                                            <span class="badge bg-danger">Obligatoire</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">Optionnel</span>
-                                        {% endif %}
+                                        <span class="badge bg-info">{{ document.abbreviation }}</span>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">

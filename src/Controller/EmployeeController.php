@@ -33,7 +33,8 @@ class EmployeeController extends AbstractController
         // Récupérer les informations de l'employé connecté
         $contrats = $contratRepository->findBy(['employe' => $employee]);
         $dossiers = $dossierRepository->findBy(['employe' => $employee]);
-        $documents = $documentRepository->findBy(['dossier' => $dossiers]);
+        // Les documents ne sont plus liés aux dossiers, donc on récupère tous les documents
+        $documents = $documentRepository->findAll();
 
         $response = $this->render('employee/dashboard.html.twig', [
             'employee' => $employee,
@@ -104,11 +105,8 @@ class EmployeeController extends AbstractController
     {
         $employee = $this->getUser();
         $dossiers = $employee->getDossiers();
-        $documents = [];
-        
-        foreach ($dossiers as $dossier) {
-            $documents = array_merge($documents, $documentRepository->findBy(['dossier' => $dossier]));
-        }
+        // Les documents ne sont plus liés aux dossiers, donc on récupère tous les documents
+        $documents = $documentRepository->findAll();
 
         $response = $this->render('employee/documents.html.twig', [
             'documents' => $documents

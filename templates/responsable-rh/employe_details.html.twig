@@ -47,13 +47,20 @@
                                 </div>
                                 <hr>
                                 <div class="row">
-                                    <div class="col-sm-4"><strong>Poste :</strong></div>
-                                    <div class="col-sm-8">{{ employe.position }}</div>
-                                </div>
-                                <hr>
-                                <div class="row">
                                     <div class="col-sm-4"><strong>Département :</strong></div>
-                                    <div class="col-sm-8">{{ employe.department }}</div>
+                                    <div class="col-sm-8">
+                                        {% if employe.employeeContrats is not empty %}
+                                            {% set currentContrat = employe.employeeContrats|first %}
+                                            {% if currentContrat.organisationEmployeeContrats is not empty %}
+                                                {% set currentOrg = currentContrat.organisationEmployeeContrats|first.organisation %}
+                                                {{ currentOrg.nom }}
+                                            {% else %}
+                                                <span class="text-muted">Non assigné</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <hr>
                                 <div class="row">
@@ -94,14 +101,8 @@
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        <h3 class="text-warning">
-                                            {% set totalDocuments = 0 %}
-                                            {% for dossier in employe.dossiers %}
-                                                {% set totalDocuments = totalDocuments + dossier.documents|length %}
-                                            {% endfor %}
-                                            {{ totalDocuments }}
-                                        </h3>
-                                        <p class="mb-0">Document(s)</p>
+                                        <h3 class="text-warning">{{ employe.dossiers|length }}</h3>
+                                        <p class="mb-0">Dossier(s)</p>
                                     </div>
                                 </div>
                             </div>
@@ -122,8 +123,9 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
+                                                    <th>Type</th>
                                                     <th>Nature du Contrat</th>
+                                                    <th>Organisation</th>
                                                     <th>Date de Début</th>
                                                     <th>Date de Fin</th>
                                                     <th>Statut</th>
@@ -133,14 +135,29 @@
                                             <tbody>
                                                 {% for contrat in employe.employeeContrats %}
                                                 <tr>
-                                                    <td>{{ contrat.id }}</td>
+                                                    <td>
+                                                        {% if loop.first %}
+                                                            <span class="badge bg-primary">Principal</span>
+                                                        {% else %}
+                                                            <span class="badge bg-info">Secondaire</span>
+                                                        {% endif %}
+                                                    </td>
                                                     <td>
                                                         <span class="badge bg-primary">{{ contrat.natureContrat }}</span>
                                                     </td>
-                                                    <td>{{ contrat.startDate|date('d/m/Y') }}</td>
                                                     <td>
-                                                        {% if contrat.endDate %}
-                                                            {{ contrat.endDate|date('d/m/Y') }}
+                                                        {% if contrat.organisationEmployeeContrats is not empty %}
+                                                            {% for orgContrat in contrat.organisationEmployeeContrats %}
+                                                                <span class="badge bg-secondary">{{ orgContrat.organisation.dossierDesignation }}</span>
+                                                            {% endfor %}
+                                                        {% else %}
+                                                            <span class="text-muted">Non assigné</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ contrat.dateDebut|date('d/m/Y') }}</td>
+                                                    <td>
+                                                        {% if contrat.dateFin %}
+                                                            {{ contrat.dateFin|date('d/m/Y') }}
                                                         {% else %}
                                                             <span class="text-muted">Non définie</span>
                                                         {% endif %}
@@ -157,8 +174,8 @@
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        {% if contrat.endDate %}
-                                                            {% set duree = contrat.endDate.diff(contrat.startDate) %}
+                                                        {% if contrat.dateFin %}
+                                                            {% set duree = contrat.dateFin.diff(contrat.dateDebut) %}
                                                             {{ duree.y }} an(s), {{ duree.m }} mois
                                                         {% else %}
                                                             <span class="text-muted">En cours</span>
@@ -214,7 +231,7 @@
                                                         {% endif %}
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-primary">{{ dossier.documents|length }} document(s)</span>
+                                                        <span class="badge bg-primary">Dossier</span>
                                                     </td>
                                                     <td>{{ dossier.createdAt|date('d/m/Y H:i') }}</td>
                                                     <td>
@@ -267,7 +284,7 @@
                                                 {% for demande in employe.demandes|slice(0, 5) %}
                                                 <tr>
                                                     <td>{{ demande.id }}</td>
-                                                    <td>{{ demande.sujet }}</td>
+                                                    <td>{{ demande.titre }}</td>
                                                     <td>
                                                         {% if demande.statut == 'en_attente' %}
                                                             <span class="badge bg-warning">En attente</span>
@@ -281,7 +298,7 @@
                                                     </td>
                                                     <td>{{ demande.dateCreation|date('d/m/Y H:i') }}</td>
                                                     <td>
-                                                        <a href="{{ path('responsable_view_demande', {'id': demande.id}) }}" class="btn btn-sm btn-info" title="Voir la demande">
+                                                        <a href="{{ path('responsable_voir_demande', {'id': demande.id}) }}" class="btn btn-sm btn-info" title="Voir la demande">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
                                                     </td>

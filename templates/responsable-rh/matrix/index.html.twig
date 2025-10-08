@@ -1,0 +1,277 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Matrice des Obligations Documentaires{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0 text-gray-800">
+                        <i class="fas fa-table me-2"></i>Matrice des Obligations Documentaires
+                    </h1>
+                    <p class="text-muted mb-0">Matrice des documents requis par type de contrat</p>
+                </div>
+                <div>
+                    <a href="{{ path('responsable_matrix_statistics') }}" class="btn btn-info">
+                        <i class="fas fa-chart-bar me-2"></i>Statistiques
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Entrées
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ totalEntries }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-list fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Types de Documents
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">{{ groupedMatrix|length }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Types de Contrats
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% if groupedMatrix|length > 0 %}
+                                            {{ groupedMatrix|first|length }}
+                                        {% else %}
+                                            0
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Documents Obligatoires
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {% set required = 0 %}
+                                        {% for entries in groupedMatrix %}
+                                            {% for entry in entries %}
+                                                {% if entry.required %}{% set required = required + 1 %}{% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {{ required }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matrix Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Matrice Complète</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Document</th>
+                                    {% if groupedMatrix|length > 0 %}
+                                        {% for entry in groupedMatrix|first %}
+                                            <th class="text-center">
+                                                <small>{{ entry.contractType }}</small>
+                                            </th>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for documentAbbreviation, entries in groupedMatrix %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ documentAbbreviation }}</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <a href="{{ path('responsable_matrix_by_document', {'abbreviation': documentAbbreviation}) }}" class="text-decoration-none">
+                                                    Voir détails
+                                                </a>
+                                            </small>
+                                        </td>
+                                        {% for entry in entries %}
+                                            <td class="text-center">
+                                                {% if entry.required %}
+                                                    <span class="badge bg-danger">
+                                                        <i class="fas fa-check"></i> Obligatoire
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-minus"></i> Optionnel
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents and Contracts Lists -->
+            <div class="row mb-4">
+                <!-- Documents List -->
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-file-alt me-2"></i>
+                                Types de Documents ({{ groupedMatrix|keys|length }})
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Abréviation</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for documentAbbreviation in groupedMatrix|keys|sort %}
+                                            <tr>
+                                                <td>
+                                                    <span class="badge bg-primary">{{ documentAbbreviation }}</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <a href="{{ path('responsable_matrix_by_document', {'abbreviation': documentAbbreviation}) }}" 
+                                                       class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye me-1"></i>Voir
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contracts List -->
+                <div class="col-lg-6">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-file-contract me-2"></i>
+                                Types de Contrats
+                                {% if groupedMatrix|length > 0 %}
+                                    ({{ groupedMatrix|first|length }})
+                                {% else %}
+                                    (0)
+                                {% endif %}
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Type de Contrat</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if groupedMatrix|length > 0 %}
+                                            {% for entry in groupedMatrix|first %}
+                                                <tr>
+                                                    <td>
+                                                        <small>{{ entry.contractType }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <a href="{{ path('responsable_matrix_by_contract', {'contractType': entry.contractType}) }}" 
+                                                           class="btn btn-info btn-sm">
+                                                            <i class="fas fa-eye me-1"></i>Voir
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">Légende</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span class="badge bg-danger me-2">
+                                        <i class="fas fa-check"></i> Obligatoire
+                                    </span>
+                                    <small class="text-muted">Document requis pour ce type de contrat</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <span class="badge bg-secondary me-2">
+                                        <i class="fas fa-minus"></i> Optionnel
+                                    </span>
+                                    <small class="text-muted">Document non requis pour ce type de contrat</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

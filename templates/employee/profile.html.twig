@@ -50,7 +50,19 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <td><strong>Département :</strong></td>
-                                        <td>{{ employee.department ?: 'Non renseigné' }}</td>
+                                        <td>
+                                            {% if employee.employeeContrats is not empty %}
+                                                {% set currentContrat = employee.employeeContrats|first %}
+                                                {% if currentContrat.organisationEmployeeContrats is not empty %}
+                                                    {% set currentOrg = currentContrat.organisationEmployeeContrats|first.organisation %}
+                                                    {{ currentOrg.nom }}
+                                                {% else %}
+                                                    Non assigné
+                                                {% endif %}
+                                            {% else %}
+                                                Non assigné
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 </table>
                             </div>

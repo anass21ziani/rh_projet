@@ -77,9 +77,6 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        {{ form_label(form.department, null, {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.department, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.department) }}
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -91,35 +88,83 @@
                                 </div>
                             </div>
 
-                            <hr class="my-4">
-                            <h5 class="mb-3"><i class="fas fa-file-contract"></i> Informations du Contrat</h5>
+        <hr class="my-4">
+        <h5 class="mb-3"><i class="fas fa-file-contract"></i> Informations du Contrat Principal</h5>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.natureContrat, null, {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.natureContrat, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.natureContrat) }}
-                                    </div>
-                                </div>
-                            </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.natureContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.natureContrat, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.natureContrat) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.organisation, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.organisation, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.organisation) }}
+                </div>
+            </div>
+        </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.dateDebutContrat, null, {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.dateDebutContrat, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.dateDebutContrat) }}
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        {{ form_label(form.dateFinContrat, null, {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.dateFinContrat, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.dateFinContrat) }}
-                                    </div>
-                                </div>
-                            </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateDebutContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateDebutContrat, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateDebutContrat) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateFinContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateFinContrat, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateFinContrat) }}
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4">
+        <h5 class="mb-3"><i class="fas fa-file-contract"></i> Informations du Contrat Secondaire (Optionnel)</h5>
+        <p class="text-muted mb-3">
+            <i class="fas fa-info-circle me-2"></i>
+            Un employé peut avoir plusieurs contrats avec différentes natures et organisations.
+        </p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.natureContrat2, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.natureContrat2, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.natureContrat2) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.organisation2, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.organisation2, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.organisation2) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateDebutContrat2, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateDebutContrat2, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateDebutContrat2) }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    {{ form_label(form.dateFinContrat2, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateFinContrat2, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.dateFinContrat2) }}
+                </div>
+            </div>
+        </div>
 
                             <div class="d-flex justify-content-between">
                                 <a href="{{ path('responsable_manage_employes') }}" class="btn btn-secondary">
