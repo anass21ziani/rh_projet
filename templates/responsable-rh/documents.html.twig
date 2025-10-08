@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_sidebar.html.twig' %}
 
 {% block title %}Gestion des Documents{% endblock %}
 
@@ -30,7 +30,7 @@
                                     <th>ID</th>
                                     <th>Référence</th>
                                     <th>Nom du Fichier</th>
-                                    <th>Type</th>
+                                    <th>Type de Document</th>
                                     <th>Dossier</th>
                                     <th>Uploadé par</th>
                                     <th>Date d'Upload</th>
@@ -44,7 +44,11 @@
                                     <td>{{ document.reference }}</td>
                                     <td>{{ document.filename }}</td>
                                     <td>
-                                        <span class="badge bg-secondary">{{ document.fileType|upper }}</span>
+                                        {% if document.typeDocument %}
+                                            <span class="badge bg-primary">{{ document.typeDocument.nom }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Non défini</span>
+                                        {% endif %}
                                     </td>
                                     <td>{{ document.dossier.title }}</td>
                                     <td>{{ document.uploadedBy }}</td>

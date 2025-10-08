@@ -1,6 +1,6 @@
 {% extends 'base_sidebar.html.twig' %}
 
-{% block title %}Ajouter un Dossier{% endblock %}
+{% block title %}Modifier le Dossier{% endblock %}
 
 {% block body %}
 <div class="row">
@@ -8,8 +8,8 @@
         <div class="card">
             <div class="card-header">
                 <h1 class="mb-0">
-                    <i class="fas fa-plus me-2"></i>
-                    Ajouter un Dossier
+                    <i class="fas fa-edit me-2"></i>
+                    Modifier le Dossier
                 </h1>
             </div>
             <div class="card-body">
@@ -60,7 +60,7 @@
                         <i class="fas fa-arrow-left me-2"></i>Retour
                     </a>
                     <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save me-2"></i>Enregistrer
+                        <i class="fas fa-save me-2"></i>Enregistrer les modifications
                     </button>
                 </div>
                 {{ form_end(form) }}

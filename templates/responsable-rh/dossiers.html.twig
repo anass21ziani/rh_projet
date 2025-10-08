@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_sidebar.html.twig' %}
 
 {% block title %}Gestion des Dossiers{% endblock %}
 
@@ -30,8 +30,9 @@
                                     <th>ID</th>
                                     <th>Titre</th>
                                     <th>Employé</th>
-                                    <th>Type</th>
+                                    <th>Statut</th>
                                     <th>Placard</th>
+                                    <th>Documents</th>
                                     <th>Description</th>
                                     <th>Date de Création</th>
                                     <th>Actions</th>
@@ -44,7 +45,19 @@
                                     <td>{{ dossier.title }}</td>
                                     <td>{{ dossier.employee.firstName }} {{ dossier.employee.lastName }}</td>
                                     <td>
-                                        <span class="badge bg-info">{{ dossier.type|title }}</span>
+                                        {% if dossier.status == 'completed' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Complété
+                                            </span>
+                                        {% elseif dossier.status == 'in_progress' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>En cours
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-hourglass-half me-1"></i>En attente
+                                            </span>
+                                        {% endif %}
                                     </td>
                                     <td>
                                         {% if dossier.placard %}
@@ -58,20 +71,48 @@
                                             <span class="text-muted">Aucun placard</span>
                                         {% endif %}
                                     </td>
+                                    <td>
+                                        {% if dossier.documents|length > 0 %}
+                                            <div class="d-flex flex-wrap gap-1">
+                                                {% for document in dossier.documents %}
+                                                    {% if document.typeDocument %}
+                                                        <span class="badge bg-primary" title="{{ document.filename }}">
+                                                            {{ document.typeDocument.nom }}
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge bg-secondary" title="{{ document.filename }}">
+                                                            {{ document.fileType|upper }}
+                                                        </span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <small class="text-muted">{{ dossier.documents|length }} document(s)</small>
+                                        {% else %}
+                                            <span class="text-muted">Aucun document</span>
+                                        {% endif %}
+                                    </td>
                                     <td>{{ dossier.description|length > 50 ? dossier.description|slice(0, 50) ~ '...' : dossier.description }}</td>
                                     <td>{{ dossier.createdAt|date('d/m/Y H:i') }}</td>
                                     <td>
-                                        <a href="{{ path('responsable_edit_dossier', {'id': dossier.id}) }}" class="btn btn-sm btn-warning me-2">
-                                            <i class="fas fa-edit"></i> Modifier
-                                        </a>
-                                        <a href="{{ path('responsable_add_document', {'dossier_id': dossier.id}) }}" class="btn btn-sm btn-info me-2">
-                                            <i class="fas fa-file-upload"></i> Ajouter Document
-                                        </a>
-                                        <a href="{{ path('responsable_delete_dossier', {'id': dossier.id}) }}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
-                                            <i class="fas fa-trash"></i> Supprimer
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('responsable_add_document', {'dossier_id': dossier.id}) }}" class="btn btn-sm btn-success" title="Ajouter un document">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                            {% if dossier.documents|length > 0 %}
+                                                <a href="{{ path('responsable_view_dossier_documents', {'id': dossier.id}) }}" class="btn btn-sm btn-info" title="Voir les documents">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            {% endif %}
+                                            <a href="{{ path('responsable_edit_dossier', {'id': dossier.id}) }}" class="btn btn-sm btn-warning" title="Modifier le dossier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ path('responsable_delete_dossier', {'id': dossier.id}) }}" 
+                                               class="btn btn-sm btn-danger"
+                                               title="Supprimer le dossier"
+                                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% if dossier.documents|length > 0 %}

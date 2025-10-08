@@ -9,6 +9,7 @@ use App\Entity\Dossier;
 use App\Entity\Placard;
 use App\Entity\Document;
 use App\Entity\Demande;
+use App\Entity\TypeDocument;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -39,6 +40,28 @@ class AppFixtures extends Fixture
         $stage->setLibelle('Stage');
         $stage->setDescription('Période de stage');
         $manager->persist($stage);
+
+        // Créer les types de documents
+        $typesDocuments = [
+            ['nom' => 'Contrat de travail', 'description' => 'Contrat d\'embauche', 'obligatoire' => true],
+            ['nom' => 'Fiche de paie', 'description' => 'Bulletin de salaire mensuel', 'obligatoire' => true],
+            ['nom' => 'Attestation de travail', 'description' => 'Certificat d\'emploi', 'obligatoire' => false],
+            ['nom' => 'CV', 'description' => 'Curriculum vitae', 'obligatoire' => true],
+            ['nom' => 'Lettre de motivation', 'description' => 'Lettre de candidature', 'obligatoire' => false],
+            ['nom' => 'Diplôme', 'description' => 'Certificat de formation', 'obligatoire' => true],
+            ['nom' => 'Carte d\'identité', 'description' => 'Pièce d\'identité', 'obligatoire' => true],
+            ['nom' => 'Photo d\'identité', 'description' => 'Photo de profil', 'obligatoire' => true],
+            ['nom' => 'Certificat médical', 'description' => 'Visite médicale d\'embauche', 'obligatoire' => true],
+            ['nom' => 'Relevé d\'identité bancaire', 'description' => 'RIB pour les virements', 'obligatoire' => true],
+        ];
+
+        foreach ($typesDocuments as $typeData) {
+            $typeDocument = new TypeDocument();
+            $typeDocument->setNom($typeData['nom']);
+            $typeDocument->setDescription($typeData['description']);
+            $typeDocument->setObligatoire($typeData['obligatoire']);
+            $manager->persist($typeDocument);
+        }
 
         // Créer les utilisateurs
         $administrateurRh = new Employee();
@@ -91,14 +114,17 @@ class AppFixtures extends Fixture
         $dossier->setTitle('Dossier administratif');
         $dossier->setDescription('Dossier contenant tous les documents administratifs de l\'employé');
         $dossier->setType('administratif');
+        $dossier->setStatus('completed');
         $manager->persist($dossier);
 
         // Créer un placard pour le dossier
         $placard = new Placard();
-        $placard->setDossier($dossier);
         $placard->setName('Placard A1');
         $placard->setLocation('Bureau RH - Étage 2');
         $manager->persist($placard);
+        
+        // Associer le dossier au placard
+        $dossier->setPlacard($placard);
 
         // Créer un document exemple
         $document = new Document();

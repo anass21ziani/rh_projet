@@ -6,7 +6,7 @@
 {% if app.user %}
 <script>
     // Si l'utilisateur est déjà connecté, le rediriger automatiquement
-    window.location.href = '{{ path('app_home') }}';
+    window.location.href = '{{ path('app_dashboard') }}';
 </script>
 {% endif %}
 <div class="login-container">

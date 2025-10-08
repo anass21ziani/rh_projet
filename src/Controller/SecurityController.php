@@ -25,8 +25,8 @@ class SecurityController extends AbstractController
             if (in_array('ROLE_RESPONSABLE_RH', $roles)) {
                 return $this->redirectToRoute('responsable_rh_dashboard');
             }
-            if (in_array('ROLE_EMPLOYE', $roles)) {
-                return $this->redirectToRoute('app_home');
+            if (in_array('ROLE_EMPLOYEE', $roles)) {
+                return $this->redirectToRoute('employee_dashboard');
             }
         }
         

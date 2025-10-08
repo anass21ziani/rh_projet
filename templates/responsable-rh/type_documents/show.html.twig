@@ -1,0 +1,202 @@
+{% extends 'base_sidebar.html.twig' %}
+
+{% block title %}Type de Document - {{ type_document.nom }}{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">{{ type_document.nom }}</h1>
+                <div>
+                    <a href="{{ path('app_type_document_edit', {'id': type_document.id}) }}" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifier
+                    </a>
+                    <a href="{{ path('app_type_document_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-file-alt"></i> Détails du Type de Document
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Nom</h6>
+                                    <p class="text-muted">{{ type_document.nom }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Statut</h6>
+                                    {% if type_document.obligatoire %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle"></i> Obligatoire
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Optionnel</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if type_document.description %}
+                                <div class="mb-3">
+                                    <h6>Description</h6>
+                                    <p class="text-muted">{{ type_document.description }}</p>
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <h6>Date de création</h6>
+                                <p class="text-muted">{{ type_document.createdAt|date('d/m/Y à H:i') }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if type_document.natureContrats is not empty %}
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-file-contract"></i> Types de Contrats Associés
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for nature_contrat in type_document.natureContrats %}
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="card border-info">
+                                                <div class="card-body p-3">
+                                                    <h6 class="card-title">{{ nature_contrat.libelle }}</h6>
+                                                    {% if nature_contrat.description %}
+                                                        <p class="card-text small text-muted">{{ nature_contrat.description }}</p>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if type_document.documents is not empty %}
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-files"></i> Documents de ce Type ({{ type_document.documents|length }})
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Nom du fichier</th>
+                                                <th>Dossier</th>
+                                                <th>Date d'upload</th>
+                                                <th>Taille</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for document in type_document.documents %}
+                                                <tr>
+                                                    <td>{{ document.filename }}</td>
+                                                    <td>{{ document.dossier.nom }}</td>
+                                                    <td>{{ document.createdAt|date('d/m/Y') }}</td>
+                                                    <td>{{ document.fileSizeFormatted }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-chart-bar"></i> Statistiques
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ type_document.documents|length }}</h4>
+                                    <small class="text-muted">Documents</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-info">{{ type_document.natureContrats|length }}</h4>
+                                    <small class="text-muted">Types de contrats</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-cogs"></i> Actions
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('app_type_document_edit', {'id': type_document.id}) }}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Modifier
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="confirmDelete({{ type_document.id }})">
+                                    <i class="fas fa-trash"></i> Supprimer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmation de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer ce type de document ? Cette action est irréversible.
+                {% if type_document.documents|length > 0 %}
+                    <div class="alert alert-warning mt-2">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Attention :</strong> Ce type de document est utilisé par {{ type_document.documents|length }} document(s).
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(id) {
+    const form = document.getElementById('deleteForm');
+    form.action = '{{ path('app_type_document_delete', {'id': '__ID__'}) }}'.replace('__ID__', id);
+    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

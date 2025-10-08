@@ -8,8 +8,8 @@ use App\Entity\Dossier;
 use App\Entity\Document;
 use App\Entity\Demande;
 use App\Entity\Placard;
+use App\Entity\NatureContrat;
 use App\Form\EmployeeType;
-use App\Form\EmployeeContratType;
 use App\Form\DossierType;
 use App\Form\DocumentType;
 use App\Form\ReponseDemandeType;
@@ -20,6 +20,7 @@ use App\Repository\DossierRepository;
 use App\Repository\DocumentRepository;
 use App\Repository\DemandeRepository;
 use App\Repository\PlacardRepository;
+use App\Repository\NatureContratRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,18 +55,12 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
         
-        $response = $this->render('responsable-rh/dashboard.html.twig');
-        
-        // Prevent caching of responsable rh pages
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        
-        return $response;
+        // Rediriger vers le nouveau dashboard avec KPI
+        return $this->redirectToRoute('app_dashboard');
     }
 
     #[Route('/employes', name: 'responsable_manage_employes')]
-    public function manageEmployes(EmployeeRepository $employeeRepository): Response
+    public function manageEmployes(Request $request, EmployeeRepository $employeeRepository): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -77,11 +72,19 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Récupérer tous les employés
-        $employees = $employeeRepository->findByRole('ROLE_EMPLOYEE');
+        // Récupérer le filtre de statut
+        $showAll = $request->query->getBoolean('show_all', false);
+        
+        // Récupérer les employés selon le filtre
+        if ($showAll) {
+            $employees = $employeeRepository->findByRole('ROLE_EMPLOYEE');
+        } else {
+            $employees = $employeeRepository->findActiveByRole('ROLE_EMPLOYEE');
+        }
 
         $response = $this->render('responsable-rh/employes.html.twig', [
-            'employees' => $employees
+            'employees' => $employees,
+            'showAll' => $showAll
         ]);
         
         $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
@@ -89,6 +92,49 @@ class ResponsableRhController extends AbstractController
         $response->headers->set('Expires', '0');
         
         return $response;
+    }
+
+    #[Route('/employes/add', name: 'responsable_rh_add_employe')]
+    public function addEmployee(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, NatureContratRepository $natureContratRepository): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $employee = new Employee();
+        $form = $this->createForm(EmployeeType::class, $employee);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Définir le rôle d'employé
+            $employee->setRoles(['ROLE_EMPLOYEE']);
+            
+            // Hacher le mot de passe
+            $plainPassword = $form->get('password')->getData();
+            if ($plainPassword) {
+                $hashedPassword = $passwordHasher->hashPassword($employee, $plainPassword);
+                $employee->setPassword($hashedPassword);
+            }
+
+            // Créer le contrat
+            $contrat = new EmployeeContrat();
+            $contrat->setEmployee($employee);
+            $contrat->setNatureContrat($form->get('natureContrat')->getData());
+            $contrat->setStartDate($form->get('dateDebutContrat')->getData());
+            $contrat->setEndDate($form->get('dateFinContrat')->getData());
+            $contrat->setStatut('actif');
+
+            $entityManager->persist($employee);
+            $entityManager->persist($contrat);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Employé créé avec succès avec son contrat.');
+            return $this->redirectToRoute('responsable_manage_employes');
+        }
+
+        return $this->render('responsable-rh/add_employe.html.twig', [
+            'form' => $form,
+        ]);
     }
 
     #[Route('/employes/ajouter', name: 'responsable_add_employe')]
@@ -138,8 +184,9 @@ class ResponsableRhController extends AbstractController
         return $response;
     }
 
-    #[Route('/employes/modifier/{id}', name: 'responsable_edit_employe')]
-    public function editEmploye(Request $request, Employee $employee, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+
+    #[Route('/employes/toggle-status/{id}', name: 'responsable_toggle_employe_status')]
+    public function toggleEmployeStatus(Employee $employee, EntityManagerInterface $entityManager): Response
     {
         // Vérifier que l'utilisateur est toujours authentifié
         if (!$this->getUser()) {
@@ -157,79 +204,30 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('responsable_manage_employes');
         }
 
-        $form = $this->createForm(EmployeeType::class, $employee, [
-            'is_new' => false // Modification d'utilisateur existant
-        ]);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Maintenir le rôle d'employé (pas de changement nécessaire)
-            // Le rôle reste inchangé lors de la modification
-            
-            // Si un nouveau mot de passe est fourni, le hasher
-            $plainPassword = $form->get('password')->getData();
-            if ($plainPassword) {
-                $hashedPassword = $passwordHasher->hashPassword($employee, $plainPassword);
-                $employee->setPassword($hashedPassword);
-            }
-            
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Employé modifié avec succès !');
-            return $this->redirectToRoute('responsable_manage_employes');
-        }
-
-        $response = $this->render('responsable-rh/edit_employe.html.twig', [
-            'form' => $form->createView(),
-            'employee' => $employee
-        ]);
-        
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        
-        return $response;
-    }
-
-    #[Route('/employes/supprimer/{id}', name: 'responsable_delete_employe')]
-    public function deleteEmploye(Employee $employee, EntityManagerInterface $entityManager): Response
-    {
-        // Vérifier que l'utilisateur est toujours authentifié
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('app_login');
-        }
-        
-        // Vérifier que l'utilisateur a le bon rôle
-        if (!in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        // Vérifier que c'est bien un employé
-        if (!in_array('ROLE_EMPLOYEE', $employee->getRoles())) {
-            $this->addFlash('error', 'Utilisateur non trouvé ou non autorisé.');
-            return $this->redirectToRoute('responsable_manage_employes');
-        }
-
-        $entityManager->remove($employee);
+        // Toggle le statut actif/inactif
+        $employee->setIsActive(!$employee->isActive());
         $entityManager->flush();
 
-        $this->addFlash('success', 'Employé supprimé avec succès !');
+        $status = $employee->isActive() ? 'activé' : 'désactivé';
+        $this->addFlash('success', "Employé {$status} avec succès !");
         return $this->redirectToRoute('responsable_manage_employes');
     }
 
-    // Gestion des contrats
-    #[Route('/contrats', name: 'responsable_manage_contrats')]
-    public function manageContrats(EmployeeContratRepository $employeeContratRepository): Response
+    #[Route('/employes/{id}/details', name: 'responsable_view_employe_details')]
+    public function viewEmployeDetails(int $id, EmployeeRepository $employeeRepository): Response
     {
         if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
             return $this->redirectToRoute('app_login');
         }
 
-        $contrats = $employeeContratRepository->findActiveContrats();
+        $employe = $employeeRepository->find($id);
+        if (!$employe) {
+            $this->addFlash('error', 'Employé non trouvé !');
+            return $this->redirectToRoute('responsable_manage_employes');
+        }
 
-        $response = $this->render('responsable-rh/contrats.html.twig', [
-            'contrats' => $contrats
+        $response = $this->render('responsable-rh/employe_details.html.twig', [
+            'employe' => $employe
         ]);
         
         $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
@@ -237,85 +235,6 @@ class ResponsableRhController extends AbstractController
         $response->headers->set('Expires', '0');
         
         return $response;
-    }
-
-    #[Route('/contrats/ajouter', name: 'responsable_add_contrat')]
-    public function addContrat(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $contrat = new EmployeeContrat();
-        $form = $this->createForm(EmployeeContratType::class, $contrat);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($contrat);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Contrat ajouté avec succès !');
-            return $this->redirectToRoute('responsable_manage_contrats');
-        }
-
-        $response = $this->render('responsable-rh/add_contrat.html.twig', [
-            'form' => $form->createView()
-        ]);
-        
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        
-        return $response;
-    }
-
-    #[Route('/contrats/modifier/{id}', name: 'responsable_edit_contrat')]
-    public function editContrat(int $id, Request $request, EntityManagerInterface $entityManager, EmployeeContratRepository $contratRepository): Response
-    {
-        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $contrat = $contratRepository->find($id);
-        if (!$contrat) {
-            $this->addFlash('error', 'Contrat non trouvé !');
-            return $this->redirectToRoute('responsable_manage_contrats');
-        }
-
-        $form = $this->createForm(EmployeeContratType::class, $contrat);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            $this->addFlash('success', 'Contrat modifié avec succès !');
-            return $this->redirectToRoute('responsable_manage_contrats');
-        }
-
-        return $this->render('responsable-rh/add_contrat.html.twig', [
-            'form' => $form->createView(),
-            'contrat' => $contrat
-        ]);
-    }
-
-    #[Route('/contrats/supprimer/{id}', name: 'responsable_delete_contrat')]
-    public function deleteContrat(int $id, EntityManagerInterface $entityManager, EmployeeContratRepository $contratRepository): Response
-    {
-        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        $contrat = $contratRepository->find($id);
-        if (!$contrat) {
-            $this->addFlash('error', 'Contrat non trouvé !');
-            return $this->redirectToRoute('responsable_manage_contrats');
-        }
-
-        $entityManager->remove($contrat);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Contrat supprimé avec succès !');
-        return $this->redirectToRoute('responsable_manage_contrats');
     }
 
     // Gestion des dossiers
@@ -392,7 +311,7 @@ class ResponsableRhController extends AbstractController
             return $this->redirectToRoute('responsable_manage_dossiers');
         }
 
-        return $this->render('responsable-rh/add_dossier.html.twig', [
+        return $this->render('responsable-rh/edit_dossier.html.twig', [
             'form' => $form->createView(),
             'dossier' => $dossier
         ]);
@@ -418,6 +337,31 @@ class ResponsableRhController extends AbstractController
         return $this->redirectToRoute('responsable_manage_dossiers');
     }
 
+    #[Route('/dossiers/{id}/documents', name: 'responsable_view_dossier_documents')]
+    public function viewDossierDocuments(int $id, DossierRepository $dossierRepository): Response
+    {
+        if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $dossier = $dossierRepository->find($id);
+        if (!$dossier) {
+            $this->addFlash('error', 'Dossier non trouvé !');
+            return $this->redirectToRoute('responsable_manage_dossiers');
+        }
+
+        $response = $this->render('responsable-rh/dossier_documents.html.twig', [
+            'dossier' => $dossier,
+            'documents' => $dossier->getDocuments()
+        ]);
+        
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        
+        return $response;
+    }
+
     // Gestion des documents
     #[Route('/documents', name: 'responsable_manage_documents')]
     public function manageDocuments(DocumentRepository $documentRepository): Response
@@ -440,13 +384,23 @@ class ResponsableRhController extends AbstractController
     }
 
     #[Route('/documents/ajouter', name: 'responsable_add_document')]
-    public function addDocument(Request $request, EntityManagerInterface $entityManager): Response
+    public function addDocument(Request $request, EntityManagerInterface $entityManager, DossierRepository $dossierRepository): Response
     {
         if (!$this->getUser() || !in_array('ROLE_RESPONSABLE_RH', $this->getUser()->getRoles())) {
             return $this->redirectToRoute('app_login');
         }
 
         $document = new Document();
+        
+        // Si un dossier_id est fourni, pré-sélectionner le dossier
+        $dossierId = $request->query->get('dossier_id');
+        if ($dossierId) {
+            $dossier = $dossierRepository->find($dossierId);
+            if ($dossier) {
+                $document->setDossier($dossier);
+            }
+        }
+        
         $form = $this->createForm(DocumentType::class, $document, [
             'is_new' => true
         ]);
@@ -454,6 +408,12 @@ class ResponsableRhController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Vérifier et générer une référence unique
+            $reference = $document->getReference();
+            if (!$reference || $this->referenceExists($entityManager, $reference)) {
+                $document->setReference($this->generateUniqueReference($entityManager));
+            }
+            
             // Gérer l'upload du fichier
             $file = $form->get('file')->getData();
             if ($file) {
@@ -511,7 +471,13 @@ class ResponsableRhController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Document ajouté avec succès !');
-            return $this->redirectToRoute('responsable_manage_documents');
+            
+            // Rediriger vers le dossier si un dossier_id était fourni
+            if ($dossierId) {
+                return $this->redirectToRoute('responsable_view_dossier_documents', ['id' => $dossierId]);
+            }
+            
+            return $this->redirectToRoute('responsable_manage_dossiers');
         }
 
         $response = $this->render('responsable-rh/add_document.html.twig', [
@@ -885,5 +851,38 @@ class ResponsableRhController extends AbstractController
         }
         
         return $filename;
+    }
+
+    private function generateUniqueReference(EntityManagerInterface $entityManager): string
+    {
+        $year = date('Y');
+        $attempts = 0;
+        $maxAttempts = 100;
+        
+        do {
+            $attempts++;
+            $number = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $reference = "DOC-{$year}-{$number}";
+            
+            // Vérifier si cette référence existe déjà
+            $existingDocument = $entityManager->getRepository(\App\Entity\Document::class)
+                ->findOneBy(['reference' => $reference]);
+                
+        } while ($existingDocument && $attempts < $maxAttempts);
+        
+        if ($attempts >= $maxAttempts) {
+            // Si on n'arrive pas à générer une référence unique, utiliser un timestamp
+            $reference = "DOC-{$year}-" . time();
+        }
+        
+        return $reference;
+    }
+
+    private function referenceExists(EntityManagerInterface $entityManager, string $reference): bool
+    {
+        $existingDocument = $entityManager->getRepository(\App\Entity\Document::class)
+            ->findOneBy(['reference' => $reference]);
+        
+        return $existingDocument !== null;
     }
 }

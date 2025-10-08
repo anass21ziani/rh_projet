@@ -28,9 +28,13 @@ class NatureContrat
     #[ORM\OneToMany(targetEntity: EmployeeContrat::class, mappedBy: 'natureContrat')]
     private Collection $employeeContrats;
 
+    #[ORM\ManyToMany(targetEntity: TypeDocument::class, inversedBy: 'natureContrats')]
+    private Collection $typeDocuments;
+
     public function __construct()
     {
         $this->employeeContrats = new ArrayCollection();
+        $this->typeDocuments = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -93,6 +97,30 @@ class NatureContrat
                 $employeeContrat->setNatureContrat(null);
             }
         }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TypeDocument>
+     */
+    public function getTypeDocuments(): Collection
+    {
+        return $this->typeDocuments;
+    }
+
+    public function addTypeDocument(TypeDocument $typeDocument): static
+    {
+        if (!$this->typeDocuments->contains($typeDocument)) {
+            $this->typeDocuments->add($typeDocument);
+        }
+
+        return $this;
+    }
+
+    public function removeTypeDocument(TypeDocument $typeDocument): static
+    {
+        $this->typeDocuments->removeElement($typeDocument);
+
         return $this;
     }
 

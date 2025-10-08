@@ -1,0 +1,143 @@
+{% extends 'base_sidebar.html.twig' %}
+
+{% block title %}Documents du Dossier - {{ dossier.title }}{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Documents du Dossier
+                    </h1>
+                    <p class="mb-0 text-muted">
+                        <strong>{{ dossier.title }}</strong> - {{ dossier.employee.firstName }} {{ dossier.employee.lastName }}
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ path('responsable_add_document', {'dossier_id': dossier.id}) }}" class="btn btn-success me-2">
+                        <i class="fas fa-plus me-2"></i>Ajouter un Document
+                    </a>
+                    <a href="{{ path('responsable_manage_dossiers') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour aux Dossiers
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if documents is empty %}
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Aucun document trouvé dans ce dossier. 
+                        <a href="{{ path('responsable_add_document', {'dossier_id': dossier.id}) }}" class="alert-link">Ajouter le premier document</a>
+                    </div>
+                {% else %}
+                    <!-- Résumé des documents existants -->
+                    <div class="mb-4">
+                        <h5><i class="fas fa-chart-pie me-2"></i>Résumé des Documents</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-file-alt fa-2x mb-2"></i>
+                                        <h4>{{ documents|length }}</h4>
+                                        <p class="mb-0">Document(s) total</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-check-circle fa-2x mb-2"></i>
+                                        <h4>{{ documents|filter(d => d.obligatoire)|length }}</h4>
+                                        <p class="mb-0">Document(s) obligatoire(s)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-tag fa-2x mb-2"></i>
+                                        <h4>{{ documents|filter(d => d.typeDocument)|length }}</h4>
+                                        <p class="mb-0">Document(s) typé(s)</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <i class="fas fa-question-circle fa-2x mb-2"></i>
+                                        <h4>{{ documents|filter(d => not d.typeDocument)|length }}</h4>
+                                        <p class="mb-0">Document(s) non typé(s)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des documents -->
+                    <h5><i class="fas fa-list me-2"></i>Documents du Dossier ({{ documents|length }})</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type de Document</th>
+                                    <th>Nom du Fichier</th>
+                                    <th>Référence</th>
+                                    <th>Taille</th>
+                                    <th>Uploadé par</th>
+                                    <th>Date d'Upload</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for document in documents %}
+                                <tr>
+                                    <td>{{ document.id }}</td>
+                                    <td>
+                                        {% if document.typeDocument %}
+                                            <span class="badge bg-primary">{{ document.typeDocument.nom }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Non défini</span>
+                                        {% endif %}
+                                        {% if document.obligatoire %}
+                                            <span class="badge bg-danger ms-1">Obligatoire</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-file me-1"></i>
+                                        {{ document.filename }}
+                                    </td>
+                                    <td>{{ document.reference }}</td>
+                                    <td>{{ document.fileSizeFormatted }}</td>
+                                    <td>{{ document.uploadedBy }}</td>
+                                    <td>{{ document.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('responsable_download_document', {'id': document.id}) }}" class="btn btn-sm btn-info" title="Télécharger">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <a href="{{ path('responsable_edit_document', {'id': document.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="{{ path('responsable_delete_document', {'id': document.id}) }}" 
+                                               class="btn btn-sm btn-danger"
+                                               title="Supprimer"
+                                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce document ?')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

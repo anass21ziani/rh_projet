@@ -1,39 +1,181 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_sidebar.html.twig' %}
 
 {% block title %}Ajouter un Employé{% endblock %}
+{% block page_title %}Ajouter un Employé{% endblock %}
 
 {% block body %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h1 class="mb-0">
-                    <i class="fas fa-user-plus me-2"></i>
-                    Ajouter un Employé
-                </h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Ajouter un Nouvel Employé</h1>
+                <a href="{{ path('responsable_manage_employes') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
             </div>
-            <div class="card-body">
-                {{ form_start(form) }}
-                    <div class="mb-3">
-                        {{ form_label(form.email) }}
-                        {{ form_widget(form.email) }}
-                        {{ form_errors(form.email) }}
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-user-plus"></i> Informations de l'Employé
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': true}}) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.firstName, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.firstName, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.firstName) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.lastName, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.lastName) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.email) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.phone, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.phone, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.phone) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.hireDate, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.hireDate, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.hireDate) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.position, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.position, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.position) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.department, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.department, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.department) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.password, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.password, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.password) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="mb-3"><i class="fas fa-file-contract"></i> Informations du Contrat</h5>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.natureContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.natureContrat, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.natureContrat) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.dateDebutContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.dateDebutContrat, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.dateDebutContrat) }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        {{ form_label(form.dateFinContrat, null, {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.dateFinContrat, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.dateFinContrat) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ path('responsable_manage_employes') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Créer l'Employé et le Contrat
+                                </button>
+                            </div>
+
+                            {{ form_end(form) }}
+                        </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        {{ form_label(form.password) }}
-                        {{ form_widget(form.password) }}
-                        {{ form_errors(form.password) }}
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Informations
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Création d'Employé</h6>
+                            <p class="text-muted small">
+                                Lors de la création d'un employé, un contrat sera automatiquement créé avec les informations fournies.
+                            </p>
+                            
+                            <h6>Mot de passe</h6>
+                            <p class="text-muted small">
+                                Le mot de passe doit contenir au moins 8 caractères. L'employé pourra le modifier lors de sa première connexion.
+                            </p>
+                            
+                            <h6>Contrat</h6>
+                            <p class="text-muted small">
+                                Le contrat sera créé avec le statut "Actif" par défaut. Vous pourrez le modifier ultérieurement si nécessaire.
+                            </p>
+                        </div>
                     </div>
-                    
-                    
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <a href="{{ path('responsable_manage_employes') }}" class="btn btn-secondary me-md-2">
-                            <i class="fas fa-arrow-left me-2"></i>Retour
-                        </a>
-                        {{ form_widget(form.submit) }}
-                    </div>
-                {{ form_end(form) }}
+                </div>
             </div>
         </div>
     </div>

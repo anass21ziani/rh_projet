@@ -1,0 +1,310 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\title{\textbf{Rapport de Développement - Système de Gestion RH}}
+\author{Développement d'un Système de Gestion des Ressources Humaines}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Ce rapport présente l'évolution et les améliorations apportées au système de gestion des ressources humaines développé avec Symfony 7.3. Le système a été enrichi de nouvelles fonctionnalités, d'une interface utilisateur modernisée et d'un système de tableaux de bord adaptatifs selon les rôles des utilisateurs.
+
+\section{Architecture du Système}
+
+\subsection{Technologies Utilisées}
+Le système repose sur une architecture moderne utilisant :
+\begin{itemize}
+    \item \textbf{Symfony 7.3} : Framework PHP principal
+    \item \textbf{PostgreSQL 16} : Base de données relationnelle
+    \item \textbf{Doctrine ORM 3.5} : Mapping objet-relationnel
+    \item \textbf{Bootstrap 5} : Framework CSS pour l'interface utilisateur
+    \item \textbf{Twig} : Moteur de templates
+    \item \textbf{Chart.js} : Bibliothèque JavaScript pour les graphiques
+\end{itemize}
+
+\subsection{Architecture MVC}
+Le système suit le pattern Model-View-Controller avec :
+\begin{itemize}
+    \item \textbf{Modèles} : Entités Doctrine représentant les données métier
+    \item \textbf{Vues} : Templates Twig pour l'affichage
+    \item \textbf{Contrôleurs} : Logique métier et gestion des requêtes
+\end{itemize}
+
+\section{Nouvelles Fonctionnalités Implémentées}
+
+\subsection{Système de Gestion des Placards}
+
+\subsubsection{Objectif}
+Intégration d'un système de gestion des placards physiques pour l'organisation des dossiers employés dans l'espace de travail.
+
+\subsubsection{Fonctionnalités}
+\begin{itemize}
+    \item Création et gestion des placards avec identification unique
+    \item Association des dossiers employés aux placards spécifiques
+    \item Interface de gestion dédiée pour les responsables RH
+    \item Visualisation de l'occupation des placards
+\end{itemize}
+
+\subsubsection{Impact}
+Cette fonctionnalité améliore l'organisation physique des documents et facilite la localisation des dossiers employés dans l'environnement de travail.
+
+\subsection{Système de Demandes et Réclamations}
+
+\subsubsection{Objectif}
+Mise en place d'un canal de communication structuré entre les employés et les responsables RH pour les demandes et réclamations.
+
+\subsubsection{Fonctionnalités}
+\begin{itemize}
+    \item Création de demandes par les employés
+    \item Système de suivi des demandes avec statuts
+    \item Interface de gestion pour les responsables RH
+    \item Notifications et réponses aux demandes
+\end{itemize}
+
+\subsubsection{Impact}
+Améliore la communication interne et permet un suivi structuré des demandes des employés.
+
+\subsection{Tableaux de Bord Adaptatifs}
+
+\subsubsection{Objectif}
+Création de tableaux de bord personnalisés selon le rôle de l'utilisateur connecté.
+
+\subsubsection{Fonctionnalités par Rôle}
+
+\paragraph{Dashboard Responsable RH}
+\begin{itemize}
+    \item Indicateurs de performance globaux (KPIs)
+    \item Graphiques de répartition des employés par département
+    \item Statistiques des contrats (actifs, expirés, suspendus)
+    \item Vue d'ensemble des dossiers et documents
+    \item Graphiques interactifs avec Chart.js
+\end{itemize}
+
+\paragraph{Dashboard Employé}
+\begin{itemize}
+    \item KPIs personnels (contrats, dossiers, documents, demandes)
+    \item Graphiques des statuts de contrats personnels
+    \item Graphiques des statuts de dossiers personnels
+    \item Informations personnelles centralisées
+    \item Actions rapides vers les fonctionnalités principales
+\end{itemize}
+
+\subsubsection{Impact}
+Améliore l'expérience utilisateur en fournissant des informations pertinentes selon le contexte et le rôle de chaque utilisateur.
+
+\section{Améliorations de l'Interface Utilisateur}
+
+\subsection{Modernisation du Design}
+
+\subsubsection{Éléments Visuels}
+\begin{itemize}
+    \item Interface moderne avec Bootstrap 5
+    \item Cartes KPI avec bordures colorées et icônes
+    \item Graphiques interactifs et responsifs
+    \item Palette de couleurs cohérente
+    \item Typographie améliorée
+\end{itemize}
+
+\subsubsection{Navigation}
+\begin{itemize}
+    \item Barre de navigation latérale avec modules organisés
+    \item Navigation adaptative selon les rôles
+    \item Liens d'actions rapides
+    \item Breadcrumbs pour la navigation contextuelle
+\end{itemize}
+
+\subsection{Responsivité}
+L'interface s'adapte automatiquement aux différentes tailles d'écran, garantissant une expérience optimale sur desktop, tablette et mobile.
+
+\section{Gestion des Statuts et Workflows}
+
+\subsection{Statuts des Dossiers}
+\begin{itemize}
+    \item \textbf{En attente} : Dossier créé, en attente de traitement
+    \item \textbf{En cours} : Dossier en cours de traitement
+    \item \textbf{Complété} : Dossier finalisé
+\end{itemize}
+
+\subsection{Statuts des Contrats}
+\begin{itemize}
+    \item \textbf{Actif} : Contrat en cours de validité
+    \item \textbf{Expiré} : Contrat arrivé à expiration
+    \item \textbf{Suspendu} : Contrat temporairement suspendu
+\end{itemize}
+
+\section{Sécurité et Contrôle d'Accès}
+
+\subsection{Système de Rôles}
+Le système implémente un contrôle d'accès basé sur les rôles :
+\begin{itemize}
+    \item \textbf{ROLE\_ADMINISTRATEUR\_RH} : Accès complet au système
+    \item \textbf{ROLE\_RESPONSABLE\_RH} : Gestion des employés et dossiers
+    \item \textbf{ROLE\_EMPLOYEE} : Accès aux informations personnelles
+\end{itemize}
+
+\subsection{Sécurité}
+\begin{itemize}
+    \item Authentification sécurisée
+    \item Protection CSRF sur les formulaires
+    \item Headers de sécurité HTTP
+    \item Validation des données côté serveur
+\end{itemize}
+
+\section{Base de Données et Entités}
+
+\subsection{Nouvelles Tables}
+\begin{itemize}
+    \item \textbf{placard} : Gestion des placards physiques
+    \item \textbf{demande} : Système de demandes et réclamations
+    \item \textbf{type\_document} : Types de documents standardisés
+    \item \textbf{type\_document\_nature\_contrat} : Association types de documents et natures de contrats
+\end{itemize}
+
+\subsection{Relations}
+Les entités sont liées par des relations Doctrine appropriées :
+\begin{itemize}
+    \item Relations OneToMany et ManyToOne
+    \item Relations ManyToMany pour les associations complexes
+    \item Contraintes d'intégrité référentielle
+\end{itemize}
+
+\section{Performance et Optimisation}
+
+\subsection{Optimisations Implémentées}
+\begin{itemize}
+    \item Mise en cache des requêtes fréquentes
+    \item Lazy loading pour les relations Doctrine
+    \item Compression des assets
+    \item Optimisation des requêtes de base de données
+\end{itemize}
+
+\subsection{Métriques de Performance}
+\begin{itemize}
+    \item Temps de chargement des pages optimisé
+    \item Réduction de la charge serveur
+    \item Amélioration de l'expérience utilisateur
+\end{itemize}
+
+\section{Expérience Utilisateur}
+
+\subsection{Workflow Employé}
+\begin{enumerate}
+    \item Connexion au système
+    \item Accès au dashboard personnel
+    \item Consultation des informations personnelles
+    \item Gestion des demandes et réclamations
+    \item Accès aux documents et contrats
+\end{enumerate}
+
+\subsection{Workflow Responsable RH}
+\begin{enumerate}
+    \item Connexion au système
+    \item Accès au dashboard global
+    \item Gestion des employés et dossiers
+    \item Traitement des demandes
+    \item Gestion des placards
+    \item Consultation des statistiques
+\end{enumerate}
+
+\section{Intégration et Compatibilité}
+
+\subsection{Compatibilité Navigateur}
+Le système est compatible avec les navigateurs modernes :
+\begin{itemize}
+    \item Chrome 90+
+    \item Firefox 88+
+    \item Safari 14+
+    \item Edge 90+
+\end{itemize}
+
+\subsection{Responsive Design}
+L'interface s'adapte aux différentes résolutions :
+\begin{itemize}
+    \item Desktop (1920x1080 et plus)
+    \item Laptop (1366x768)
+    \item Tablet (768x1024)
+    \item Mobile (375x667)
+\end{itemize}
+
+\section{Maintenance et Évolutivité}
+
+\subsection{Architecture Modulaire}
+Le système est conçu pour faciliter la maintenance :
+\begin{itemize}
+    \item Séparation claire des responsabilités
+    \item Code modulaire et réutilisable
+    \item Documentation intégrée
+    \item Tests unitaires et fonctionnels
+\end{itemize}
+
+\subsection{Évolutivité}
+L'architecture permet l'ajout facile de nouvelles fonctionnalités :
+\begin{itemize}
+    \item Système de plugins
+    \item API REST pour intégrations futures
+    \item Base de données extensible
+    \item Interface utilisateur modulaire
+\end{itemize}
+
+\section{Conclusion}
+
+\subsection{Bilan des Améliorations}
+Les développements réalisés ont considérablement enrichi le système de gestion RH :
+
+\begin{itemize}
+    \item \textbf{Fonctionnalités} : Ajout de 4 nouvelles entités et de leurs interfaces de gestion
+    \item \textbf{Interface} : Modernisation complète avec des tableaux de bord adaptatifs
+    \item \textbf{Expérience utilisateur} : Amélioration significative avec des KPIs visuels et des graphiques interactifs
+    \item \textbf{Organisation} : Système de placards pour une meilleure gestion physique des documents
+    \item \textbf{Communication} : Canal structuré pour les demandes et réclamations
+\end{itemize}
+
+\subsection{Perspectives d'Évolution}
+Le système est maintenant prêt pour de futures évolutions :
+\begin{itemize}
+    \item Intégration d'un système de notifications en temps réel
+    \item Développement d'une application mobile
+    \item Intégration avec des systèmes externes (paie, formation)
+    \item Mise en place d'un système de workflow avancé
+    \item Ajout de fonctionnalités d'analyse prédictive
+\end{itemize}
+
+\subsection{Impact Métier}
+Ces améliorations apportent une valeur ajoutée significative :
+\begin{itemize}
+    \item Amélioration de l'efficacité opérationnelle
+    \item Réduction des temps de traitement des demandes
+    \item Meilleure organisation des documents physiques
+    \item Amélioration de la communication interne
+    \item Tableaux de bord pour le pilotage et la décision
+\end{itemize}
+
+Le système de gestion RH est maintenant un outil complet et moderne, adapté aux besoins actuels et futurs de l'organisation.
+
+\end{document}

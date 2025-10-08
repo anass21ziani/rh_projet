@@ -1,89 +1,300 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_sidebar.html.twig' %}
 
 {% block title %}Dashboard Employé{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+        .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+        .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+        .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+        .text-xs { font-size: 0.7rem; }
+        .text-gray-800 { color: #5a5c69 !important; }
+        .text-gray-300 { color: #dddfeb !important; }
+        .shadow { box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important; }
+        .chart-area { position: relative; height: 10rem; width: 100%; }
+        .chart-pie { position: relative; height: 15rem; width: 100%; }
+    </style>
+{% endblock %}
+
 {% block body %}
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h1 class="mb-0">
-                    <i class="fas fa-user me-2"></i>
-                    Dashboard Employé
-                </h1>
-            </div>
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-tachometer-alt me-2"></i>Dashboard Employé
+    </h1>
+    <div class="text-muted">
+        <i class="fas fa-user me-1"></i>{{ employee.firstName }} {{ employee.lastName }}
+    </div>
+</div>
+
+<!-- KPIs Personnels -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
-                <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <h5 class="card-title">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Informations personnelles
-                                </h5>
-                                <div class="alert alert-info">
-                                    <strong>Nom :</strong> {{ employee.firstName }} {{ employee.lastName }}
-                                </div>
-                                <div class="alert alert-info">
-                                    <strong>Email :</strong> {{ employee.email }}
-                                </div>
-                                <div class="alert alert-info">
-                                    <strong>Poste :</strong> {{ employee.position }}
-                                </div>
-                                <div class="alert alert-info">
-                                    <strong>Département :</strong> {{ employee.department }}
-                                </div>
-                                <div class="alert alert-success">
-                                    <strong>Statut :</strong> Connecté en tant qu'employé
-                                </div>
-                                <p>Bienvenue dans votre espace personnel. Consultez vos informations, contrats et documents.</p>
-                                <div class="mt-4">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <a href="{{ path('employee_profile') }}" class="btn btn-primary w-100">
-                                                <i class="fas fa-user me-2"></i>Mon Profil
-                                            </a>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <a href="{{ path('employee_contrats') }}" class="btn btn-success w-100">
-                                                <i class="fas fa-file-contract me-2"></i>Mes Contrats
-                                            </a>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <a href="{{ path('employee_dossiers') }}" class="btn btn-info w-100">
-                                                <i class="fas fa-folder me-2"></i>Mes Dossiers
-                                            </a>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <a href="{{ path('employee_documents') }}" class="btn btn-warning w-100">
-                                                <i class="fas fa-file-alt me-2"></i>Mes Documents
-                                            </a>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <a href="{{ path('employee_demandes') }}" class="btn btn-secondary w-100">
-                                                <i class="fas fa-envelope me-2"></i>Mes Demandes et Réclamations
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="alert alert-info">
-                                        <strong>Fonctionnalités disponibles :</strong>
-                                        <ul class="mb-0 mt-2">
-                                            <li>Consultation de votre profil personnel</li>
-                                            <li>Visualisation de vos contrats</li>
-                                            <li>Accès à vos dossiers</li>
-                                            <li>Téléchargement de vos documents</li>
-                                            <li>Envoi de demandes et réclamations</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Mes Contrats
                         </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ contrats|length }}
+                        </div>
+                        <div class="text-xs text-muted">
+                            Contrats actifs
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-contract fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Mes Dossiers
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ dossiers|length }}
+                        </div>
+                        <div class="text-xs text-muted">
+                            Dossiers personnels
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-folder fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Mes Documents
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ documents|length }}
+                        </div>
+                        <div class="text-xs text-muted">
+                            Documents téléchargés
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Mes Demandes
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            {{ employee.demandes|length }}
+                        </div>
+                        <div class="text-xs text-muted">
+                            Demandes envoyées
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-envelope fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Graphiques et Informations -->
+<div class="row">
+    <!-- Graphique des Contrats -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Statut des Contrats</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie">
+                    <canvas id="contratsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graphique des Dossiers -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-success">Statut des Dossiers</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie">
+                    <canvas id="dossiersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informations Personnelles -->
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-info">Informations Personnelles</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-4x text-gray-300"></i>
+                    </div>
+                    <h5 class="font-weight-bold text-gray-800">{{ employee.firstName }} {{ employee.lastName }}</h5>
+                    <p class="text-muted mb-2">{{ employee.position }}</p>
+                    <p class="text-muted mb-3">{{ employee.department }}</p>
+                    
+                    <div class="row text-center">
+                        <div class="col-12 mb-2">
+                            <small class="text-muted">Email</small><br>
+                            <strong>{{ employee.email }}</strong>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>Actif
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Actions Rapides -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Actions Rapides</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_profile') }}" class="btn btn-primary btn-block">
+                            <i class="fas fa-user fa-2x mb-2"></i><br>
+                            Mon Profil
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_contrats') }}" class="btn btn-success btn-block">
+                            <i class="fas fa-file-contract fa-2x mb-2"></i><br>
+                            Mes Contrats
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_dossiers') }}" class="btn btn-info btn-block">
+                            <i class="fas fa-folder fa-2x mb-2"></i><br>
+                            Mes Dossiers
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_documents') }}" class="btn btn-warning btn-block">
+                            <i class="fas fa-file-alt fa-2x mb-2"></i><br>
+                            Mes Documents
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_demandes') }}" class="btn btn-secondary btn-block">
+                            <i class="fas fa-envelope fa-2x mb-2"></i><br>
+                            Mes Demandes
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-6 mb-3">
+                        <a href="{{ path('employee_nouvelle_demande') }}" class="btn btn-danger btn-block">
+                            <i class="fas fa-plus fa-2x mb-2"></i><br>
+                            Nouvelle Demande
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts pour les graphiques -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Graphique des contrats
+const contratsCtx = document.getElementById('contratsChart').getContext('2d');
+const contratsChart = new Chart(contratsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Actifs', 'Expirés', 'Suspendus'],
+        datasets: [{
+            data: [
+                {{ contrats|filter(c => c.statut == 'actif')|length }},
+                {{ contrats|filter(c => c.statut == 'expire')|length }},
+                {{ contrats|filter(c => c.statut == 'suspendu')|length }}
+            ],
+            backgroundColor: ['#1cc88a', '#e74a3b', '#f6c23e'],
+            hoverBackgroundColor: ['#17a673', '#c0392b', '#d68910'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Graphique des dossiers
+const dossiersCtx = document.getElementById('dossiersChart').getContext('2d');
+const dossiersChart = new Chart(dossiersCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Complétés', 'En cours', 'En attente'],
+        datasets: [{
+            data: [
+                {{ dossiers|filter(d => d.status == 'completed')|length }},
+                {{ dossiers|filter(d => d.status == 'in_progress')|length }},
+                {{ dossiers|filter(d => d.status == 'pending')|length }}
+            ],
+            backgroundColor: ['#1cc88a', '#36b9cc', '#858796'],
+            hoverBackgroundColor: ['#17a673', '#2c9faf', '#6c757d'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

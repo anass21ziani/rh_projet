@@ -48,16 +48,23 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
     #[ORM\OneToMany(targetEntity: EmployeeContrat::class, mappedBy: 'employee', cascade: ['persist', 'remove'])]
     private Collection $employeeContrats;
 
     #[ORM\OneToMany(targetEntity: Dossier::class, mappedBy: 'employee', cascade: ['persist', 'remove'])]
     private Collection $dossiers;
 
+    #[ORM\OneToMany(targetEntity: Demande::class, mappedBy: 'employe', cascade: ['persist', 'remove'])]
+    private Collection $demandes;
+
     public function __construct()
     {
         $this->employeeContrats = new ArrayCollection();
         $this->dossiers = new ArrayCollection();
+        $this->demandes = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -159,6 +166,17 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+        return $this;
+    }
+
     // UserInterface methods
     public function getUserIdentifier(): string
     {
@@ -238,6 +256,33 @@ class Employee implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->dossiers->removeElement($dossier)) {
             if ($dossier->getEmployee() === $this) {
                 $dossier->setEmployee(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Demande>
+     */
+    public function getDemandes(): Collection
+    {
+        return $this->demandes;
+    }
+
+    public function addDemande(Demande $demande): static
+    {
+        if (!$this->demandes->contains($demande)) {
+            $this->demandes->add($demande);
+            $demande->setEmploye($this);
+        }
+        return $this;
+    }
+
+    public function removeDemande(Demande $demande): static
+    {
+        if ($this->demandes->removeElement($demande)) {
+            if ($demande->getEmploye() === $this) {
+                $demande->setEmploye(null);
             }
         }
         return $this;

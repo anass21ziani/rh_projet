@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_sidebar.html.twig' %}
 
 {% block title %}Gestion des Employés{% endblock %}
 
@@ -11,16 +11,23 @@
                     <i class="fas fa-users me-2"></i>
                     Gestion des Employés
                 </h1>
-                <a href="{{ path('responsable_add_employe') }}" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>Ajouter un Employé
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="{{ path('responsable_manage_employes', {'show_all': not showAll}) }}" 
+                       class="btn btn-{{ showAll ? 'primary' : 'outline-primary' }}">
+                        <i class="fas fa-{{ showAll ? 'eye' : 'eye-slash' }} me-2"></i>
+                        {{ showAll ? 'Voir seulement actifs' : 'Voir tous' }}
+                    </a>
+                    <a href="{{ path('responsable_rh_add_employe') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>Ajouter un Employé
+                    </a>
+                </div>
             </div>
             <div class="card-body">
                 {% if employees is empty %}
                     <div class="alert alert-info text-center">
                         <i class="fas fa-info-circle me-2"></i>
                         Aucun employé trouvé. 
-                        <a href="{{ path('responsable_add_employe') }}" class="alert-link">Ajouter le premier employé</a>
+                        <a href="{{ path('responsable_rh_add_employe') }}" class="alert-link">Ajouter le premier employé</a>
                     </div>
                 {% else %}
                     <div class="table-responsive">
@@ -33,12 +40,14 @@
                                     <th>Email</th>
                                     <th>Poste</th>
                                     <th>Département</th>
+                                    <th>Statut</th>
+                                    <th>Statut Contrat</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for employe in employees %}
-                                <tr>
+                                <tr class="{{ not employe.isActive ? 'table-secondary' : '' }}">
                                     <td>{{ employe.id }}</td>
                                     <td>{{ employe.lastName }}</td>
                                     <td>{{ employe.firstName }}</td>
@@ -46,14 +55,44 @@
                                     <td>{{ employe.position }}</td>
                                     <td>{{ employe.department }}</td>
                                     <td>
-                                        <a href="{{ path('responsable_edit_employe', {'id': employe.id}) }}" class="btn btn-sm btn-warning me-2">
-                                            <i class="fas fa-edit"></i> Modifier
-                                        </a>
-                                        <a href="{{ path('responsable_delete_employe', {'id': employe.id}) }}" 
-                                           class="btn btn-sm btn-danger"
-                                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet employé ?')">
-                                            <i class="fas fa-trash"></i> Supprimer
-                                        </a>
+                                        {% if employe.isActive %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Actif
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Inactif
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if employe.employeeContrats|length > 0 %}
+                                            {% set dernierContrat = employe.employeeContrats|last %}
+                                            {% if dernierContrat.statut == 'actif' %}
+                                                <span class="badge bg-success">Actif</span>
+                                            {% elseif dernierContrat.statut == 'expire' %}
+                                                <span class="badge bg-danger">Expiré</span>
+                                            {% elseif dernierContrat.statut == 'suspendu' %}
+                                                <span class="badge bg-warning">Suspendu</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ dernierContrat.statut }}</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Aucun contrat</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('responsable_view_employe_details', {'id': employe.id}) }}" class="btn btn-sm btn-info" title="Voir les détails">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ path('responsable_toggle_employe_status', {'id': employe.id}) }}" 
+                                               class="btn btn-sm btn-{{ employe.isActive ? 'warning' : 'success' }}"
+                                               title="{{ employe.isActive ? 'Désactiver' : 'Activer' }} l'employé"
+                                               onclick="return confirm('Êtes-vous sûr de vouloir {{ employe.isActive ? 'désactiver' : 'activer' }} cet employé ?')">
+                                                <i class="fas fa-{{ employe.isActive ? 'pause' : 'play' }}"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}

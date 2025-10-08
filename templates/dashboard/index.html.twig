@@ -1,0 +1,352 @@
+{% extends 'base_sidebar.html.twig' %}
+
+{% block title %}Tableau de Bord - Système RH{% endblock %}
+{% block page_title %}Tableau de Bord{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <!-- KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Employés</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ kpis.total_employees }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Dossiers Complets</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ dossiers_stats.completed }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-folder fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Documents Obligatoires</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ obligatory_docs_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Demandes en Attente</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ demandes_stats.en_attente }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Statistiques des Dossiers -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Statut des Dossiers</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="dossiersChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Complets ({{ dossiers_stats.completed }})
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-warning"></i> En cours ({{ dossiers_stats.in_progress }})
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-danger"></i> En attente ({{ dossiers_stats.pending }})
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistiques des Contrats -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Statut des Contrats</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="contratsChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-success"></i> Actifs ({{ contrats_stats.actifs }})
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-warning"></i> Suspendus ({{ contrats_stats.suspendus }})
+                        </span>
+                        <span class="mr-2">
+                            <i class="fas fa-circle text-danger"></i> Expirés ({{ contrats_stats.expires }})
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition par Département -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Employés par Département</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="departmentsChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small">
+                        {% for dept, count in department_stats %}
+                            <span class="mr-2">
+                                <i class="fas fa-circle text-primary"></i> {{ dept }} ({{ count }})
+                            </span><br>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Documents Récents -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Documents Récents</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_documents is empty %}
+                        <p class="text-muted">Aucun document récent</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Dossier</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for document in recent_documents %}
+                                        <tr>
+                                            <td>{{ document.filename }}</td>
+                                            <td>{{ document.dossier.title }}</td>
+                                            <td>{{ document.createdAt|date('d/m/Y') }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Demandes Récentes -->
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Demandes Récentes</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_demandes is empty %}
+                        <p class="text-muted">Aucune demande récente</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Titre</th>
+                                        <th>Employé</th>
+                                        <th>Statut</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for demande in recent_demandes %}
+                                        <tr>
+                                            <td>{{ demande.titre }}</td>
+                                            <td>{{ demande.employe.firstName }} {{ demande.employe.lastName }}</td>
+                                            <td>
+                                                {% if demande.statut == 'en_attente' %}
+                                                    <span class="badge bg-warning">En attente</span>
+                                                {% elseif demande.statut == 'acceptee' %}
+                                                    <span class="badge bg-success">Acceptée</span>
+                                                {% elseif demande.statut == 'refusee' %}
+                                                    <span class="badge bg-danger">Refusée</span>
+                                                {% else %}
+                                                    <span class="badge bg-info">{{ demande.statut }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Chart.js configuration
+Chart.defaults.font.family = 'Arial';
+Chart.defaults.font.size = 12;
+
+// Dossiers Chart
+const dossiersCtx = document.getElementById('dossiersChart').getContext('2d');
+new Chart(dossiersCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Complets', 'En cours', 'En attente'],
+        datasets: [{
+            data: [{{ dossiers_stats.completed }}, {{ dossiers_stats.in_progress }}, {{ dossiers_stats.pending }}],
+            backgroundColor: ['#1cc88a', '#f6c23e', '#e74a3b'],
+            hoverBackgroundColor: ['#17a673', '#dda20a', '#c0392b'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        tooltips: {
+            backgroundColor: "rgb(255,255,255)",
+            bodyFontColor: "#858796",
+            borderColor: '#dddfeb',
+            borderWidth: 1,
+            xPadding: 15,
+            yPadding: 15,
+            displayColors: false,
+            caretPadding: 10,
+        },
+        legend: {
+            display: false
+        },
+        cutoutPercentage: 80,
+    },
+});
+
+// Contrats Chart
+const contratsCtx = document.getElementById('contratsChart').getContext('2d');
+new Chart(contratsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Actifs', 'Suspendus', 'Expirés'],
+        datasets: [{
+            data: [{{ contrats_stats.actifs }}, {{ contrats_stats.suspendus }}, {{ contrats_stats.expires }}],
+            backgroundColor: ['#1cc88a', '#36b9cc', '#e74a3b'],
+            hoverBackgroundColor: ['#17a673', '#2c9faf', '#c0392b'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        tooltips: {
+            backgroundColor: "rgb(255,255,255)",
+            bodyFontColor: "#858796",
+            borderColor: '#dddfeb',
+            borderWidth: 1,
+            xPadding: 15,
+            yPadding: 15,
+            displayColors: false,
+            caretPadding: 10,
+        },
+        legend: {
+            display: false
+        },
+        cutoutPercentage: 80,
+    },
+});
+
+// Departments Chart
+const departmentsCtx = document.getElementById('departmentsChart').getContext('2d');
+new Chart(departmentsCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for dept, count in department_stats %}'{{ dept }}'{% if not loop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            data: [{% for dept, count in department_stats %}{{ count }}{% if not loop.last %},{% endif %}{% endfor %}],
+            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796'],
+            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#c0392b', '#6c757d'],
+            hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+    },
+    options: {
+        maintainAspectRatio: false,
+        tooltips: {
+            backgroundColor: "rgb(255,255,255)",
+            bodyFontColor: "#858796",
+            borderColor: '#dddfeb',
+            borderWidth: 1,
+            xPadding: 15,
+            yPadding: 15,
+            displayColors: false,
+            caretPadding: 10,
+        },
+        legend: {
+            display: false
+        },
+        cutoutPercentage: 80,
+    },
+});
+</script>
+{% endblock %}

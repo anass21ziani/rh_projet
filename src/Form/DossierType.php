@@ -9,8 +9,8 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -43,20 +43,6 @@ class DossierType extends AbstractType
                     'placeholder' => 'Description du dossier'
                 ]
             ])
-            ->add('type', ChoiceType::class, [
-                'label' => 'Type de dossier',
-                'choices' => [
-                    'Administratif' => 'administratif',
-                    'Médical' => 'medical',
-                    'Juridique' => 'juridique',
-                    'Formation' => 'formation',
-                    'Évaluation' => 'evaluation',
-                    'Autre' => 'autre'
-                ],
-                'attr' => [
-                    'class' => 'form-control'
-                ]
-            ])
             ->add('placard', EntityType::class, [
                 'label' => 'Placard',
                 'class' => Placard::class,
@@ -65,6 +51,17 @@ class DossierType extends AbstractType
                 },
                 'required' => false,
                 'placeholder' => 'Sélectionner un placard (optionnel)',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('status', ChoiceType::class, [
+                'label' => 'Statut du dossier',
+                'choices' => [
+                    'En attente' => 'pending',
+                    'En cours' => 'in_progress',
+                    'Complété' => 'completed'
+                ],
                 'attr' => [
                     'class' => 'form-control'
                 ]

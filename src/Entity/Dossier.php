@@ -26,8 +26,11 @@ class Dossier
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $type = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $status = 'pending';
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
@@ -91,6 +94,17 @@ class Dossier
     public function setType(string $type): static
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
         return $this;
     }
 

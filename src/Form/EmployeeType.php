@@ -3,13 +3,15 @@
 namespace App\Form;
 
 use App\Entity\Employee;
+use App\Entity\NatureContrat;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -85,10 +87,31 @@ class EmployeeType extends AbstractType
                     'placeholder' => '••••••••'
                 ]
             ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Enregistrer',
+            // Section Contrat
+            ->add('natureContrat', EntityType::class, [
+                'class' => NatureContrat::class,
+                'choice_label' => 'libelle',
+                'label' => 'Type de contrat',
+                'mapped' => false,
                 'attr' => [
-                    'class' => 'btn btn-primary'
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('dateDebutContrat', DateType::class, [
+                'label' => 'Date de début du contrat',
+                'widget' => 'single_text',
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
+            ->add('dateFinContrat', DateType::class, [
+                'label' => 'Date de fin du contrat',
+                'widget' => 'single_text',
+                'required' => false,
+                'mapped' => false,
+                'attr' => [
+                    'class' => 'form-control'
                 ]
             ]);
     }

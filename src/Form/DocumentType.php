@@ -4,10 +4,12 @@ namespace App\Form;
 
 use App\Entity\Document;
 use App\Entity\Dossier;
+use App\Entity\TypeDocument;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,11 +28,21 @@ class DocumentType extends AbstractType
                     'class' => 'form-control'
                 ]
             ])
+            ->add('typeDocument', EntityType::class, [
+                'label' => 'Type de document',
+                'class' => TypeDocument::class,
+                'choice_label' => 'nom',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('reference', TextType::class, [
                 'label' => 'Référence',
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Ex: DOC-2025-001'
+                    'placeholder' => 'Laisser vide pour génération automatique (ex: DOC-2025-0001)'
                 ]
             ])
             ->add('filename', TextType::class, [
@@ -38,6 +50,13 @@ class DocumentType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Ex: contrat_emploi.pdf'
+                ]
+            ])
+            ->add('obligatoire', CheckboxType::class, [
+                'label' => 'Document obligatoire',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-check-input'
                 ]
             ])
             ->add('file', FileType::class, [

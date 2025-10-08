@@ -29,7 +29,7 @@ class SecurityHeadersListener
         $protectedRoutes = [
             'administrateur_rh_dashboard',
             'responsable_rh_dashboard',
-            'app_home'
+            'app_dashboard'
         ];
         
         // Check if current route is protected and user is authenticated

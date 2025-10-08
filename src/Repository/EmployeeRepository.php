@@ -63,6 +63,23 @@ class EmployeeRepository extends ServiceEntityRepository implements PasswordUpgr
         });
     }
 
+    public function findActiveByRole(string $role): array
+    {
+        // Récupérer tous les employés actifs et filtrer en PHP pour éviter les problèmes de compatibilité PostgreSQL
+        $allEmployees = $this->createQueryBuilder('e')
+            ->andWhere('e.isActive = :isActive')
+            ->setParameter('isActive', true)
+            ->orderBy('e.lastName', 'ASC')
+            ->addOrderBy('e.firstName', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        // Filtrer les employés qui ont le rôle spécifié
+        return array_filter($allEmployees, function($employee) use ($role) {
+            return in_array($role, $employee->getRoles());
+        });
+    }
+
     public function findActiveEmployees(): array
     {
         return $this->createQueryBuilder('e')
